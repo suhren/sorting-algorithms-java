@@ -1,5 +1,10 @@
 import java.awt.GridLayout;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -9,12 +14,13 @@ public class TestFrame extends JFrame implements ISortableArrayListener {
 	JButton buttonRun;
 	
 	public TestFrame() {
-		Integer[] data1 = new Integer[] { 3, 1, 5, 4, 2 };
-		Integer[] data2 = generateRandomIntegers(20, 10, 100);
-		SortableArray<Integer> a = new SortableArray<>(data2, "BubbleSort", this);
+		Integer[] data1 = new Integer[] { 3, 1, 4, 4, 2, 6 };
+		Integer[] data2 = new Integer[] { 3, 1, 5, 4, 2, 5, 7, 1, 2, 9 };
+		Integer[] data3 = generateRandomIntegers(20, 10, 100);
+		SortableArray<Integer> a = new SortableArray<>(data2, "Test", this);
 		
-		ISortingAlgorithm bubbleSort = new BubbleSort();
-		bubbleSort.sort(a);
+		SortingAlgorithm sortingAlgorithm = new QuickSort();
+		sortingAlgorithm.sortArray(a);
 		
 		buttonRun = new JButton("Press me!");
 		// Old method with an anonymous class
@@ -22,11 +28,25 @@ public class TestFrame extends JFrame implements ISortableArrayListener {
 //			  public void actionPerformed(ActionEvent e) { a.swap(2, 3); }
 //		});
 		// New method with lambda listener
-		buttonRun.addActionListener(e -> a.swap(2, 3));
+		// buttonRun.addActionListener(e -> a.swap(2, 3));
 		
 		this.getContentPane().setLayout(new GridLayout(3, 3));
 		this.getContentPane().add(buttonRun);
 		this.pack();
+	}
+	
+	public Integer[] readFromFile(String filePath) {
+		File file = new File(filePath);
+		Scanner sc = null;
+		try {
+			sc = new Scanner(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		List<Integer> data = new ArrayList<Integer>();
+		while (sc.hasNextInt())
+			data.add(sc.nextInt());
+		return (Integer[]) data.toArray();
 	}
 	
 	public Integer[] generateRandomIntegers(int n, int min, int max) {

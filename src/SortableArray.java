@@ -51,7 +51,7 @@ public class SortableArray<E extends Comparable<? super E>> {
 		E temp = data[i];
 		data[i] = data[j];
 		data[j] = temp;
-		listener.arraySwap(this, i, j, temp, data[j]);
+		listener.arraySwap(this, i, j, data[j], data[i]);
 	}
 	
 	public int compare(int i, int j) {

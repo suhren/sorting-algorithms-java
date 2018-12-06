@@ -1,3 +1,5 @@
+package com.sorting.program;
+
 import java.awt.GridLayout;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,17 +11,23 @@ import java.util.Scanner;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
+import com.sorting.algorithms.SelectionSort;
+import com.sorting.algorithms.SortingAlgorithm;
+import com.sorting.util.ISortableArrayListener;
+import com.sorting.util.SortableArray;
+
 public class TestFrame extends JFrame implements ISortableArrayListener {
 	private static final long serialVersionUID = 1L;
 	JButton buttonRun;
 	
+	@SuppressWarnings("unused")
 	public TestFrame() {
 		Integer[] data1 = new Integer[] { 3, 1, 4, 4, 2, 6 };
 		Integer[] data2 = new Integer[] { 3, 1, 5, 4, 2, 5, 7, 1, 2, 9 };
 		Integer[] data3 = generateRandomIntegers(20, 10, 100);
 		SortableArray<Integer> a = new SortableArray<>(data2, "Test", this);
 		
-		SortingAlgorithm sortingAlgorithm = new QuickSort();
+		SortingAlgorithm sortingAlgorithm = new SelectionSort();
 		sortingAlgorithm.sortArray(a);
 		
 		buttonRun = new JButton("Press me!");

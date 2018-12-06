@@ -1,3 +1,4 @@
+package com.sorting.util;
 public interface ISortableArrayListener {
 	<E> void arrayGet(SortableArray<?> a, int i, E ei);
 	<E> void arraySet(SortableArray<?> a, int i, E prev, E next);

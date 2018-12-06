@@ -1,3 +1,7 @@
+package com.sorting.algorithms;
+
+import com.sorting.util.SortableArray;
+
 public class QuickSort extends SortingAlgorithm {
 	
 	@Override

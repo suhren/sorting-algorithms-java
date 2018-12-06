@@ -1,3 +1,7 @@
+package com.sorting.algorithms;
+
+import com.sorting.util.SortableArray;
+
 /**
  * The BubbleSort algorithm works by letting the elements "bubble up" 
  * to the surface of the array. This is done by consecutively comparing 

@@ -11,24 +11,21 @@ import java.util.Scanner;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
-import com.sorting.algorithms.SelectionSort;
-import com.sorting.algorithms.SortingAlgorithm;
-import com.sorting.util.ISortableArrayListener;
-import com.sorting.util.SortableArray;
+import com.sorting.algorithms.*;
+import com.sorting.util.*;
 
-public class TestFrame extends JFrame implements ISortableArrayListener {
+public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 	private static final long serialVersionUID = 1L;
 	JButton buttonRun;
 	
-	@SuppressWarnings("unused")
 	public TestFrame() {
 		Integer[] data1 = new Integer[] { 3, 1, 4, 4, 2, 6 };
 		Integer[] data2 = new Integer[] { 3, 1, 5, 4, 2, 5, 7, 1, 2, 9 };
 		Integer[] data3 = generateRandomIntegers(20, 10, 100);
-		SortableArray<Integer> a = new SortableArray<>(data2, "Test", this);
+		//SortableArray<Integer> a = new SortableArray<>(data2, "Test", this);
 		
-		SortingAlgorithm sortingAlgorithm = new SelectionSort();
-		sortingAlgorithm.sortArray(a);
+		SortingAlgorithm<Integer> sortingAlgorithm = new HeapSort<>();
+		sortingAlgorithm.sortArray(data3, this);
 		
 		buttonRun = new JButton("Press me!");
 		// Old method with an anonymous class
@@ -64,41 +61,42 @@ public class TestFrame extends JFrame implements ISortableArrayListener {
 			data[i] = min + rand.nextInt(max - min + 1);
 		return data;
 	}
+
+	@Override
+	public <E> void sortGet(SortingAlgorithm<?> s, int i, E ei) {
+		printStatus(s, "Get " + i + ":" + ei);
+	}
+
+	@Override
+	public <E> void sortSet(SortingAlgorithm<?> s, int i, E prev, E next) {
+		printStatus(s, "Set " + i + ":" + prev + " to " + i + ":" + next);
+	}
+
+	@Override
+	public <E> void sortSwap(SortingAlgorithm<?> s, int i, int j, E ei, E ej) {
+		printStatus(s, "Swapped " + i + ":" + ei + " <-> " + j + ":" + ej);
+		printStatus(s, s.toString());
+	}
+
+	@Override
+	public <E> void sortCompare(SortingAlgorithm<?> s, int i, int j, E ei, E ej, int c) {
+		String t = (c > 0) ? " > " : (c < 0) ? " < " : " == ";
+		printStatus(s, "Compared " + i + ":" + ei + t + j + ":" + ej);
+	}
+
+	@Override
+	public void sortStart(SortingAlgorithm<?> s) {
+		printStatus(s, "Started sort");
+		printStatus(s, s.toString());
+	}
+
+	@Override
+	public void sortEnd(SortingAlgorithm<?> s) {
+		printStatus(s, "Array sorted with " + s.nGet() + " Gets, " + s.nSet() + " Sets, " + s.nComp() + " Comparisions, and " + s.nSwap() + " Swaps.");
+		printStatus(s, s.toString());
+	}
 	
-	@Override
-	public void arrayStartSort(SortableArray<?> a) {
-		printStatus(a, "Started sort");
-		printStatus(a, a.toString());
-	}
-	
-	@Override
-	public <E> void arrayGet(SortableArray<?> a, int i, E e) {
-		printStatus(a, "Get " + i + ":" + e);
-	}
-
-	@Override
-	public <E> void arraySet(SortableArray<?> a, int i, E prev, E next) {
-		printStatus(a, "Set " + i + ":" + prev + " to " + i + ":" + next);
-	}
-
-	@Override
-	public <E> void arraySwap(SortableArray<?> a, int i, int j, E ei, E ej) {
-		printStatus(a, "Swapped " + i + ":" + ei + " <-> " + j + ":" + ej);
-		printStatus(a, a.toString());
-	}
-
-	@Override
-	public <E> void arrayCompare(SortableArray<?> a, int i, int j, E ei, E ej, int c) {
-		String s = (c > 0) ? " > " : (c < 0) ? " < " : " == ";
-		printStatus(a, "Compared " + i + ":" + ei + s + j + ":" + ej);
-	}
-
-	@Override
-	public void arrayEndSort(SortableArray<?> a) {
-		printStatus(a, ": Array sorted with " + a.nGet() + " Gets, " + a.nSet() + " Sets, " + a.nComp() + " Comparisions, and " + a.nSwap() + " Swaps.");
-	}
-	
-	private void printStatus(SortableArray<?> a, String s) {
-		System.out.println(a.getElapsedTime() + ": " + a.getID() + ": " + s);
+	private void printStatus(SortingAlgorithm<?> s, String t) {
+		System.out.println(s.getElapsedTime() + ": " + s.getID() + ": " + t);
 	}
 }

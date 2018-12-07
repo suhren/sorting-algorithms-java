@@ -31,22 +31,22 @@ public class SortableArray<E extends Comparable<? super E>> {
 		else
 			return 0;
 	}
-	
 	public int length() { return data.length; }
 	
+	public void split() {
+		
+	}
 	public E get(int i) {
 		nGet++;
 		listener.arrayGet(this, i, data[i]);
 		return data[i];
 	}
-	
 	public void set(int i, E value) {
 		E prev = data[i];
 		nSet++;
 		data[i] = value;
 		listener.arraySet(this, i, prev, value);
 	}
-	
 	public void swap(int i, int j) {
 		nSwap++;
 		E temp = data[i];
@@ -54,26 +54,22 @@ public class SortableArray<E extends Comparable<? super E>> {
 		data[j] = temp;
 		listener.arraySwap(this, i, j, data[j], data[i]);
 	}
-	
 	public int compare(int i, int j) {
 		nComp++;
 		int c = data[i].compareTo(data[j]);
 		listener.arrayCompare(this, i, j, data[i], data[j], c);
 		return c;
 	}
-	
 	public void startSort() {
 		listener.arrayStartSort(this);
 		started = true;
 		timeStart = System.currentTimeMillis();
 	}
-	
 	public void endSort() {
 		sorted = true;
 		timeEnd = System.currentTimeMillis();
 		listener.arrayEndSort(this);
 	}
-	
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();

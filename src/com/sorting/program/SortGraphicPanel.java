@@ -40,9 +40,7 @@ public class SortGraphicPanel extends JPanel {
         super.paintComponent(g);
         
         if (data != null && data.length > 0) {
-			float w = this.getWidth() * 1.0f / data.length;
-			if (w < 1)
-				w = 1;
+			double w = this.getWidth() * 1.0 / data.length;
 			
 			int lastX = -1;
 			
@@ -55,7 +53,7 @@ public class SortGraphicPanel extends JPanel {
 			        	g.setColor(Color.RED);
 			        
 			        int h = this.getHeight() * data[i].intValue() / dataMax;
-			        g.fillRect(lastX, this.getHeight() - h, (int)w, h);
+			        g.fillRect(lastX, this.getHeight() - h, (int)Math.ceil(w), h);
 			        if (w >= 2) {
 				        g.setColor(Color.BLACK);
 				        g.drawRect(lastX, this.getHeight() - h, (int)w, h);

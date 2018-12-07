@@ -2,6 +2,7 @@ package com.sorting.program;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.NumberFormat;
@@ -11,9 +12,17 @@ import java.util.Random;
 import java.util.Scanner;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultCaret;
 import javax.swing.JFormattedTextField;
 
 import com.sorting.algorithms.*;
@@ -21,17 +30,17 @@ import com.sorting.util.*;
 
 public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 	private static final long serialVersionUID = 1L;
-	private boolean eventPrintout = false;
 	private boolean startEndPrintout = true;
+	private boolean eventPrintout = false;
 	private boolean arrayPrintout = false;
+	private boolean drawWhileSorting = true;
 	JComboBox<String> comboBoxSort;
-	JButton buttonSort;
-	JButton buttonGenerate;
-	JFormattedTextField textGenerateNumber;
-	JFormattedTextField textGenerateLow;
-	JFormattedTextField textGenerateHigh;
-	JFormattedTextField textDelay;
+	JCheckBox checkEvents, checkStartEnd, checkArray, checkDraw;
+	JButton buttonSort, buttonGenerate, buttonRead, buttonClear;
+	JFormattedTextField textGenerateNumber, textGenerateLow, textGenerateHigh, textDelay;
 	SortGraphicPanel graphicsPanel;
+	JTextArea textArea;
+    JScrollPane scrollArea;
 	JPanel bottomPanel;
 	
 	Integer[] data;
@@ -40,11 +49,41 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 	int delay = 0;
 	
 	public TestFrame() {
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
 		graphicsPanel = new SortGraphicPanel(800, 600);
 		this.getContentPane().add(graphicsPanel, BorderLayout.CENTER);
 		
+		textArea = new JTextArea();
+		textArea.setEditable(false);
+		textArea.setLineWrap(true);
+		textArea.setColumns(60);
+		
+		scrollArea = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.getContentPane().add(scrollArea, BorderLayout.EAST);
+		
 		bottomPanel = new JPanel();
 		bottomPanel.setLayout(new FlowLayout());
+		
+		checkStartEnd = new JCheckBox("Enable start end events");
+		checkStartEnd.addActionListener(e -> startEndPrintout = (checkStartEnd.isSelected()));
+		checkStartEnd.setSelected(startEndPrintout);
+		bottomPanel.add(checkStartEnd);
+		
+		checkEvents = new JCheckBox("Enable array operation events");
+		checkEvents.addActionListener(e -> eventPrintout = (checkEvents.isSelected()));
+		checkEvents.setSelected(eventPrintout);
+		bottomPanel.add(checkEvents);
+		
+		checkArray = new JCheckBox("Enable array printout");
+		checkArray.addActionListener(e -> arrayPrintout = (checkArray.isSelected()));
+		checkArray.setSelected(arrayPrintout);
+		bottomPanel.add(checkArray);
+		
+		checkDraw = new JCheckBox("Enable array drawing");
+		checkDraw.addActionListener(e -> drawWhileSorting = (checkDraw.isSelected()));
+		checkDraw.setSelected(drawWhileSorting);
+		bottomPanel.add(checkDraw);
 		
 		String[] names = { "BubbleSort", "HeapSort", "InsertionSort", "MergeSort", "QuickSort", "SelectionSort" };
 		comboBoxSort = new JComboBox<>(names);
@@ -73,11 +112,19 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 		textGenerateHigh.setColumns(10);
 		bottomPanel.add(textGenerateHigh);
 		
+		buttonRead = new JButton("Load CSV");
+		buttonRead.addActionListener(e -> readIntegerFromFile());
+		bottomPanel.add(buttonRead);
+		
 		textDelay = new JFormattedTextField(NumberFormat.getNumberInstance());
 		textDelay.setValue(delay);
 		textDelay.setColumns(3);
 		textDelay.addPropertyChangeListener(e -> setDelay());
 		bottomPanel.add(textDelay);
+		
+		buttonClear = new JButton("Clear text area");
+		buttonClear.addActionListener(e -> textArea.setText(""));
+		bottomPanel.add(buttonClear);
 		
 		this.getContentPane().add(bottomPanel, BorderLayout.PAGE_END);
 		
@@ -114,28 +161,48 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 		Random rand = new Random();
 		for (int i = 0; i < n; i++)
 			data[i] = low + rand.nextInt(high - low + 1);
-
+		
+		printLine("Generated array with " + n + " elements from " + low + " to " + high + ".");
 		graphicsPanel.setData(data);
-		graphicsPanel.setLastAccessed(0);
+		graphicsPanel.setLastAccessed(-1);
 		graphicsPanel.refresh();
 	}
 
 	private void sort() {
-		sortingAlgorithm.sortArray(data, this);
+		if (data != null && data.length > 0)
+			sortingAlgorithm.sortArray(data, this);
+		else
+			print("No data specified.");
 	}
 	
-	public Integer[] readFromFile(String filePath) {
-		File file = new File(filePath);
-		Scanner sc = null;
-		try {
-			sc = new Scanner(file);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+	public void readIntegerFromFile() {
+		JFileChooser fc = new JFileChooser();
+		fc.setAcceptAllFileFilterUsed(false);
+		fc.addChoosableFileFilter(new FileNameExtensionFilter("Text files", "txt"));
+		fc.setCurrentDirectory(new File(System.getProperty("user.dir")));
+		int returnVal = fc.showOpenDialog(this);
+		
+		 if (returnVal == JFileChooser.APPROVE_OPTION) {
+			Scanner sc = null;
+			try {
+				sc = new Scanner(fc.getSelectedFile());
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			List<Integer> input = new ArrayList<Integer>();
+			while (sc.hasNextInt())
+				input.add(sc.nextInt());
+				
+			Integer[] temp = new Integer[input.size()];
+			for (int i = 0; i < input.size(); i++)
+				temp[i] = input.get(i);
+				
+			data = temp;
+			printLine("Loaded array with " + data.length + " elements from " + fc.getSelectedFile().getName() + ".");
+			graphicsPanel.setData(data);
+			graphicsPanel.setLastAccessed(-1);
+			graphicsPanel.refresh();
 		}
-		List<Integer> data = new ArrayList<Integer>();
-		while (sc.hasNextInt())
-			data.add(sc.nextInt());
-		return (Integer[]) data.toArray();
 	}
 
 	@Override
@@ -158,15 +225,16 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 				printStatus(s, s.toString());
 		}
 		
-		graphicsPanel.setLastAccessed(i);
-		graphicsPanel.refresh();
-
-		if (delay > 0) {
-			try {
-				Thread.sleep(delay);
-	        } catch(Exception e) {
-	        	
-	        }
+		if (drawWhileSorting) {
+			graphicsPanel.setLastAccessed(i);
+			graphicsPanel.refresh();
+			if (delay > 0) {
+				try {
+					Thread.sleep(delay);
+		        } catch(Exception e) {
+		        	
+		        }
+			}
 		}
 	}
 
@@ -181,7 +249,7 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 	@Override
 	public void sortStart(SortingAlgorithm<?> s) {
 		if (startEndPrintout) {
-			printStatus(s, "Started sort");
+			printStatus(s, "Started sort of array with " + s.data().length + " elements.");
 			if (arrayPrintout)
 				printStatus(s, s.toString());
 		}
@@ -197,6 +265,17 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 	}
 	
 	private void printStatus(SortingAlgorithm<?> s, String t) {
-		System.out.println(s.getElapsedTime() + ": " + s.getID() + ": " + t);
+		printLine(s.getElapsedTime() + "ms: " + s.getID() + ": " + t);
+		graphicsPanel.refresh();
+	}
+	
+	private void printLine(String s) {
+		print(s + "\n");
+	}
+	
+	private void print(String s) {
+		textArea.append(s);
+		scrollArea.paintImmediately(scrollArea.getBounds());
+		textArea.paintImmediately(textArea.getBounds());
 	}
 }

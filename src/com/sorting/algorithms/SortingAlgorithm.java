@@ -20,6 +20,14 @@ public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
 	}
 	
 	public E[] sortArray(E[] a, ISortingAlgorithmListener listener) {
+		this.timeStart = 0;
+		this.timeEnd = 0;
+		this.sorted = false;
+		this.started = false;
+		this.nComp = 0;
+		this.nSwap = 0;
+		this.nGet = 0;
+		this.nSet = 0;
 		this.data = a;
 		this.listener = listener;
 		startSort();

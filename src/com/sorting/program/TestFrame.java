@@ -51,13 +51,13 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 	public TestFrame() {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-		graphicsPanel = new SortGraphicPanel(800, 600);
+		graphicsPanel = new SortGraphicPanel(1000, 500);
 		this.getContentPane().add(graphicsPanel, BorderLayout.CENTER);
 		
 		textArea = new JTextArea();
 		textArea.setEditable(false);
 		textArea.setLineWrap(true);
-		textArea.setColumns(60);
+		textArea.setColumns(50);
 		
 		scrollArea = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.getContentPane().add(scrollArea, BorderLayout.EAST);
@@ -85,7 +85,7 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 		checkDraw.setSelected(drawWhileSorting);
 		bottomPanel.add(checkDraw);
 		
-		String[] names = { "BubbleSort", "HeapSort", "InsertionSort", "MergeSort", "QuickSort", "SelectionSort" };
+		String[] names = { "BubbleSort", "HeapSort", "InsertionSort", "MergeSort", "MergeSortInPlace", "QuickSort", "SelectionSort" };
 		comboBoxSort = new JComboBox<>(names);
 		comboBoxSort.addActionListener(e -> pick());
 		bottomPanel.add(comboBoxSort);
@@ -146,6 +146,8 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
         	sortingAlgorithm = new InsertionSort<>();
         else if (name.equals("MergeSort"))
         	sortingAlgorithm = new MergeSort<>();
+        else if (name.equals("MergeSortInPlace"))
+        	sortingAlgorithm = new MergeSortInPlace<>();
         else if (name.equals("QuickSort"))
         	sortingAlgorithm = new QuickSort<>();
         else if (name.equals("SelectionSort"))
@@ -206,6 +208,12 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 	}
 
 	@Override
+	public <E> void sortMessage(SortingAlgorithm<?> s, String message) {
+		if (eventPrintout)
+			printStatus(s, message);
+	}
+	
+	@Override
 	public <E> void sortGet(SortingAlgorithm<?> s, int i, E ei) {
 		if (eventPrintout)
 			printStatus(s, "Get " + i + ":" + ei);
@@ -261,6 +269,16 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 			printStatus(s, "Array sorted with " + s.nGet() + " Gets, " + s.nSet() + " Sets, " + s.nComp() + " Comparisions, and " + s.nSwap() + " Swaps.");
 			if (arrayPrintout)
 				printStatus(s, s.toString());
+		}
+		if (drawWhileSorting) {
+			Integer[] res = new Integer[s.data().length];
+			for (int i = 0; i < res.length; i++)
+				res[i] = (Integer)s.data()[i];
+			
+			this.data = res;
+			
+			graphicsPanel.setData(res);
+			graphicsPanel.refresh();
 		}
 	}
 	

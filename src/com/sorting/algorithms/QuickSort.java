@@ -21,7 +21,7 @@ public class QuickSort<E extends Comparable<? super E>> extends SortingAlgorithm
 	@Override
 	protected E[] sort(E[] a) {
 		if (a != null && a.length > 1)
-			qs(a, 0, a.length - 1);
+			quickSort(a, 0, a.length - 1);
 		return a;
 	}
 	
@@ -31,39 +31,59 @@ public class QuickSort<E extends Comparable<? super E>> extends SortingAlgorithm
 	 * @param iLow The lower index of the span.
 	 * @param iHigh The upper index of the span.
 	 */
-	private void qs(E[] a, int iLow, int iHigh) {
+	private void quickSort(E[] a, int iLow, int iHigh) {
+		if (iLow >= iHigh)
+			return;
+					
+		message("Finding pivot index...");
+		
 		// Check if all elements are equal. Otherwise set the pivot index to -1.
 		int iPivot = -1;
 		for (int i = iLow; i < iHigh; i++)
-			if (compare(a, i, i+1) != 0)
-				iPivot = (iLow + iHigh) / 2;
+			if (compare(a, i, i+1) != 0) {
+				iPivot = (iLow + iHigh) >> 1;
+				break;
+			}
+
+		message("Pivot index = " + iPivot);
 		
 		// If the pivot index is -1 we are done.
-		if (iPivot == -1)
+		if (iPivot == -1) {
 			return;
-
+		}
+		
 		// Otherwise save the pivot element at the end of the array.
-		swap(a, iPivot, iHigh);
-		iPivot = iHigh;
+//		swap(a, iPivot, iHigh);
+//		iPivot = iHigh;
+		E pivot = a[iPivot];
+		
+		message("Partitioning...");
 		
 		// Partition the array using the pivot element (minus the end where the pivot is now located).
 		int i = iLow;
-		int j = iHigh - 1;
+		int j = iHigh;
 		
-		while (i < j) {
-			while (i < j && compare(a, i, iPivot) < 0)
+		while (i <= j) {
+			while (compare(a[i], pivot) < 0)
 				i++;
-			while (i < j && compare(a, j, iPivot) >= 0)
+			while (compare(a[j], pivot) > 0)
 				j--;
-			if (i < j)
+			if (i <= j) {
 				swap(a, i, j);
+				i++;
+				j--;
+			}
 		}
-
+		
 		// Swap back the pivot element between the two partitions.
-		swap(a, i, iPivot);
+//		swap(a, iMiddle, iPivot);
+
+		message("Low index = " + iLow + ", middle index = " + iPivot + ", high index = " + iHigh);
 		
 		// Recursively call QuickSort on the two partitions.
-		qs(a, iLow, i - 1);
-		qs(a, i + 1, iHigh);
+		if (iLow < j)
+			quickSort(a, iLow, j);
+		if (iHigh > i)
+			quickSort(a, i, iHigh);
 	}
 }

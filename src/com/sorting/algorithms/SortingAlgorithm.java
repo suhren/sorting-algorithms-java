@@ -52,6 +52,10 @@ public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
 	}
 	public E[] data() { return data; }
 	
+	protected void message(String s) {
+		listener.sortMessage(this, s);
+	}
+ 
 	protected E get(E[] a, int i) {
 		nGet++;
 		listener.sortGet(this, i, a[i]);

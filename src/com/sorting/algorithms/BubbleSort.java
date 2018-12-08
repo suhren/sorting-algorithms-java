@@ -19,11 +19,11 @@ public class BubbleSort<E extends Comparable<? super E>> extends SortingAlgorith
 	@Override
 	protected E[] sort(E[] a) {
 		if (a != null && a.length > 1)
-			bs(a);
+			bubbleSort(a);
 		return a;
 	}
 	
-	private void bs(E[] a) {
+	private void bubbleSort(E[] a) {
 		if (a != null && a.length > 1) {
 			// Loop for each element in the array
 			for (int i = 0; i < a.length; i++) {

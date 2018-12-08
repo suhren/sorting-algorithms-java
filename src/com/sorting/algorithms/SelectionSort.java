@@ -20,11 +20,11 @@ public class SelectionSort<E extends Comparable<? super E>> extends SortingAlgor
 	@Override
 	protected E[] sort(E[] a) {
 		if (a != null && a.length > 1)
-			ss(a);
+			selectionSort(a);
 		return a;
 	}
 	
-	protected void ss(E[] a) {
+	protected void selectionSort(E[] a) {
 		// Loop through the list n times
 		for (int i = 0; i < a.length; i++) {
 			// Find the smallest unsorted element

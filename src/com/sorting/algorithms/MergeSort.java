@@ -9,11 +9,11 @@ public class MergeSort<E extends Comparable<? super E>> extends SortingAlgorithm
 	@Override
 	protected E[] sort(E[] a) {
 		if (a != null && a.length > 0)
-			return ms(a);
+			return mergeSort(a);
 		return a;
 	}
 	
-	protected E[] ms(E[] a) {
+	protected E[] mergeSort(E[] a) {
 		if (a.length >= 2) {
 			boolean odd = a.length % 2 != 0;
 			int l1 = a.length / 2;
@@ -29,7 +29,7 @@ public class MergeSort<E extends Comparable<? super E>> extends SortingAlgorithm
 			if (odd)
 				set(a2, l2 - 1, get(a, a.length - 1));
 			
-			return merge(ms(a1), ms(a2));
+			return merge(mergeSort(a1), mergeSort(a2));
 		}
 		return a;
 	}

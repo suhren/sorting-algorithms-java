@@ -20,11 +20,11 @@ public class InsertionSort<E extends Comparable<? super E>> extends SortingAlgor
 	@Override
 	protected E[] sort(E[] a) {
 		if (a != null && a.length > 1)
-			is(a);
+			insertionSort(a);
 		return a;
 	}
 	
-	private void is(E[] a) {
+	private void insertionSort(E[] a) {
 		// Perform the operation for each element in the list.
 		for (int i = 1; i < a.length; i++) {
 			// The j index is the border of the sorted and unsorted sublists.

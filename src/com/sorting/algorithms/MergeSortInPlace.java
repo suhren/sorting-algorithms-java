@@ -66,18 +66,4 @@ public class MergeSortInPlace<E extends Comparable<? super E>> extends SortingAl
 	      }
 	      // Whatever remains in [right..last] is in place
 	}
-
-	/**
-	 * Puts the largest value at the end of the array. Used in the merge method after a swap of sorted array portions. An example
-	 * would be {5,6,7,8,1,2,3,4} left {5,6,7,8} and right {1,2,3,4} and 1<5 so they will swap. Left {1,6,7,8} and right {5,2,3,4}
-	 * and push will allow it to be {1,6,7,8} left and {2,3,4,5} right.
-	 * @param a The array that will be pushed.
-	 * @param start The start index of the push.
-	 * @param end The end index of the push.
-	 */
-	private void push(E[] a, int start, int end) {
-		for (int i = start; i < end; i++)
-			if (compare(a, i, i + 1) > 0)
-				swap(a, i, i + 1);
-	}
 }

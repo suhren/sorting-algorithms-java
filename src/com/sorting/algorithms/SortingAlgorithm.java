@@ -53,48 +53,56 @@ public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
 	public E[] data() { return data; }
 	
 	protected void message(String s) {
-		listener.sortMessage(this, s);
+		if (listener != null)
+			listener.sortMessage(this, s);
 	}
  
 	protected E get(E[] a, int i) {
 		nGet++;
-		listener.sortGet(this, i, a[i]);
+		if (listener != null)
+			listener.sortGet(this, i, a[i]);
 		return a[i];
 	}
 	protected void set(E[] a, int i, E value) {
 		E prev = a[i];
 		nSet++;
 		a[i] = value;
-		listener.sortSet(this, i, prev, value);
+		if (listener != null)
+			listener.sortSet(this, i, prev, value);
 	}
 	protected void swap(E[] a, int i, int j) {
 		nSwap++;
 		E temp = a[i];
 		a[i] = a[j];
 		a[j] = temp;
-		listener.sortSwap(this, i, j, a[j], a[i]);
+		if (listener != null)
+			listener.sortSwap(this, i, j, a[j], a[i]);
 	}
 	protected int compare(E[] a, int i, int j) {
 		nComp++;
 		int c = a[i].compareTo(a[j]);
-		listener.sortCompare(this, i, j, a[i], a[j], c);
+		if (listener != null)
+			listener.sortCompare(this, i, j, a[i], a[j], c);
 		return c;
 	}
 	protected int compare(E ei, E ej) {
 		nComp++;
 		int c = ei.compareTo(ej);
-		listener.sortCompare(this, -1, -1, ei, ej, c);
+		if (listener != null)
+			listener.sortCompare(this, -1, -1, ei, ej, c);
 		return c;
 	}
 	protected void startSort() {
-		listener.sortStart(this);
+		if (listener != null)
+			listener.sortStart(this);
 		started = true;
 		timeStart = System.currentTimeMillis();
 	}
 	protected void endSort() {
 		sorted = true;
 		timeEnd = System.currentTimeMillis();
-		listener.sortEnd(this);
+		if (listener != null)
+			listener.sortEnd(this);
 	}
 	
 	@Override

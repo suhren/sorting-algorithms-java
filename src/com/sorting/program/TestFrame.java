@@ -1,8 +1,8 @@
 package com.sorting.program;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.NumberFormat;
@@ -11,18 +11,18 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.DefaultCaret;
 import javax.swing.JFormattedTextField;
 
 import com.sorting.algorithms.*;
@@ -68,90 +68,190 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 		bottomPanel.setLayout(new BorderLayout());
 		bottomPanel.add(controlPanel, BorderLayout.PAGE_START);
 
+		JPanel textAreaPanel = new JPanel();
+		bottomPanel.add(textAreaPanel, BorderLayout.PAGE_END);
+
+		GroupLayout textAreaPanelLayout = new GroupLayout(textAreaPanel);
+		
+		JPanel textAreaPanelInput = new JPanel();
+		textAreaPanelInput.setBorder(BorderFactory.createTitledBorder("Input"));
 		textAreaInput = new JTextArea();
 		textAreaInput.setEditable(true);
 		textAreaInput.setLineWrap(true);
-		textAreaInput.setColumns(45);
-		textAreaInput.setRows(15);
+		textAreaInput.setColumns(40);
+		textAreaInput.setRows(10);
 		scrollAreaInput = new JScrollPane(textAreaInput, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		bottomPanel.add(scrollAreaInput, BorderLayout.WEST);
+		textAreaPanelInput.add(scrollAreaInput, BorderLayout.WEST);
 
+		JPanel textAreaPanelOutput = new JPanel();
+		textAreaPanelOutput.setBorder(BorderFactory.createTitledBorder("Output"));
 		textAreaOutput = new JTextArea();
-		textAreaOutput.setEditable(true);
+		textAreaOutput.setEditable(false);
 		textAreaOutput.setLineWrap(true);
-		textAreaOutput.setColumns(45);
-		textAreaOutput.setRows(15);
+		textAreaOutput.setColumns(40);
+		textAreaOutput.setRows(10);
+		textAreaOutput.setBackground(new Color(240, 240, 240));
 		scrollAreaOutput = new JScrollPane(textAreaOutput, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		bottomPanel.add(scrollAreaOutput, BorderLayout.CENTER);
+		textAreaPanelOutput.add(scrollAreaOutput, BorderLayout.CENTER);
 
+		JPanel textAreaPanelLog = new JPanel();
+		textAreaPanelLog.setBorder(BorderFactory.createTitledBorder("Event log"));
 		textAreaLog = new JTextArea();
 		textAreaLog.setEditable(false);
 		textAreaLog.setLineWrap(true);
-		textAreaLog.setColumns(45);
-		textAreaLog.setRows(15);
+		textAreaLog.setColumns(40);
+		textAreaLog.setRows(10);
+		textAreaLog.setBackground(new Color(240, 240, 240));
 		scrollAreaLog = new JScrollPane(textAreaLog, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		bottomPanel.add(scrollAreaLog, BorderLayout.EAST);
+		textAreaPanelLog.add(scrollAreaLog, BorderLayout.EAST);
+
+		textAreaPanelLayout.setAutoCreateGaps(true);
+		textAreaPanelLayout.setAutoCreateContainerGaps(true);
+		textAreaPanelLayout.setHorizontalGroup(
+				textAreaPanelLayout.createSequentialGroup()
+					.addComponent(textAreaPanelInput)
+					.addComponent(textAreaPanelOutput)
+					.addComponent(textAreaPanelOutput)
+				);
+		textAreaPanelLayout.setVerticalGroup(
+				textAreaPanelLayout.createParallelGroup()
+					.addComponent(textAreaPanelInput)
+					.addComponent(textAreaPanelOutput)
+					.addComponent(textAreaPanelLog)
+				);
+			
+				
+		JPanel optionsPanel = new JPanel();
+		optionsPanel.setBorder(BorderFactory.createTitledBorder("Options"));
+		GroupLayout optionsLayout = new GroupLayout(optionsPanel);
+		
+		optionsPanel.setLayout(optionsLayout);
+		controlPanel.add(optionsPanel);
 		
 		checkStartEnd = new JCheckBox("Enable start end events");
 		checkStartEnd.addActionListener(e -> startEndPrintout = (checkStartEnd.isSelected()));
 		checkStartEnd.setSelected(startEndPrintout);
-		controlPanel.add(checkStartEnd);
 		
 		checkEvents = new JCheckBox("Enable array operation events");
 		checkEvents.addActionListener(e -> eventPrintout = (checkEvents.isSelected()));
 		checkEvents.setSelected(eventPrintout);
-		controlPanel.add(checkEvents);
 		
 		checkArray = new JCheckBox("Enable array printout");
 		checkArray.addActionListener(e -> arrayPrintout = (checkArray.isSelected()));
 		checkArray.setSelected(arrayPrintout);
-		controlPanel.add(checkArray);
 		
 		checkDraw = new JCheckBox("Enable array drawing");
 		checkDraw.addActionListener(e -> drawWhileSorting = (checkDraw.isSelected()));
 		checkDraw.setSelected(drawWhileSorting);
-		controlPanel.add(checkDraw);
 		
-		String[] names = { "BubbleSort", "HeapSort", "InsertionSort", "MergeSort", "MergeSortInPlace", "QuickSort", "SelectionSort" };
-		comboBoxSort = new JComboBox<>(names);
-		comboBoxSort.addActionListener(e -> pick());
-		controlPanel.add(comboBoxSort);
-		
-		buttonSort = new JButton("Sort");
-		buttonSort.addActionListener(e -> sort());
-		buttonGenerate = new JButton("Generate");
-		buttonGenerate.addActionListener(e -> generate());
-		controlPanel.add(buttonSort);
-		controlPanel.add(buttonGenerate);
-		
-		textGenerateNumber = new JFormattedTextField(NumberFormat.getNumberInstance());
-		textGenerateNumber.setValue(200);
-		textGenerateNumber.setColumns(10);
-		controlPanel.add(textGenerateNumber);
-		
-		textGenerateLow = new JFormattedTextField(NumberFormat.getNumberInstance());
-		textGenerateLow.setValue(0);
-		textGenerateLow.setColumns(10);
-		controlPanel.add(textGenerateLow);
-		
-		textGenerateHigh = new JFormattedTextField(NumberFormat.getNumberInstance());
-		textGenerateHigh.setValue(100);
-		textGenerateHigh.setColumns(10);
-		controlPanel.add(textGenerateHigh);
-		
-		buttonRead = new JButton("Load CSV");
-		buttonRead.addActionListener(e -> readIntegerFromFile());
-		controlPanel.add(buttonRead);
-		
+		JLabel labelDelay = new JLabel("Delay (ms):");
 		textDelay = new JFormattedTextField(NumberFormat.getNumberInstance());
 		textDelay.setValue(delay);
 		textDelay.setColumns(3);
 		textDelay.addPropertyChangeListener(e -> setDelay());
-		controlPanel.add(textDelay);
+
+		JLabel labelSort = new JLabel("Sorting algorithm:");
+		String[] names = { "BubbleSort", "HeapSort", "InsertionSort", "MergeSort", "MergeSortInPlace", "QuickSort", "SelectionSort" };
+		comboBoxSort = new JComboBox<>(names);
+		comboBoxSort.addActionListener(e -> pick());
 		
-		buttonClear = new JButton("Clear text area");
+		optionsLayout.setAutoCreateGaps(true);
+		optionsLayout.setAutoCreateContainerGaps(true);
+		optionsLayout.setHorizontalGroup(
+			optionsLayout.createSequentialGroup()
+				.addGroup(optionsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+					.addComponent(checkStartEnd)
+					.addComponent(checkEvents))
+				.addGroup(optionsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+					.addComponent(checkArray)
+					.addComponent(checkDraw))
+				.addGroup(optionsLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+					.addComponent(labelSort)
+					.addComponent(labelDelay))
+				.addGroup(optionsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+					.addComponent(comboBoxSort)
+					.addComponent(textDelay))
+			);
+		optionsLayout.setVerticalGroup(
+			optionsLayout.createSequentialGroup()
+				.addGroup(optionsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+					.addComponent(checkStartEnd)
+					.addComponent(checkArray)
+					.addComponent(labelSort)
+					.addComponent(comboBoxSort))
+		      .addGroup(optionsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+	    		  	.addComponent(checkEvents)
+		           	.addComponent(checkDraw)
+		           	.addComponent(labelDelay)
+		      		.addComponent(textDelay))
+			);
+		
+		JPanel generatePanel = new JPanel();
+		generatePanel.setBorder(BorderFactory.createTitledBorder("Array generation"));
+		GroupLayout generationLayout = new GroupLayout(generatePanel);
+		generatePanel.setLayout(generationLayout);
+		controlPanel.add(generatePanel);
+		
+		buttonGenerate = new JButton("Generate");
+		buttonGenerate.addActionListener(e -> generate());
+		
+		JLabel labelSize = new JLabel("Size:");
+		textGenerateNumber = new JFormattedTextField(NumberFormat.getNumberInstance());
+		textGenerateNumber.setValue(200);
+		textGenerateNumber.setColumns(8);
+
+		JLabel labelLow = new JLabel("Low:");
+		textGenerateLow = new JFormattedTextField(NumberFormat.getNumberInstance());
+		textGenerateLow.setValue(0);
+		textGenerateLow.setColumns(8);
+
+		JLabel labelHigh = new JLabel("High:");
+		textGenerateHigh = new JFormattedTextField(NumberFormat.getNumberInstance());
+		textGenerateHigh.setValue(1000);
+		textGenerateHigh.setColumns(8);
+		
+		generationLayout.setAutoCreateGaps(true);
+		generationLayout.setAutoCreateContainerGaps(true);
+		generationLayout.setHorizontalGroup(
+				generationLayout.createSequentialGroup()
+				.addGroup(generationLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+					.addGroup(generationLayout.createSequentialGroup()
+						.addComponent(labelSize)
+						.addComponent(textGenerateNumber)
+						.addComponent(labelLow)
+						.addComponent(textGenerateLow)
+						.addComponent(labelHigh)
+						.addComponent(textGenerateHigh))
+					.addComponent(buttonGenerate))
+			);
+		generationLayout.setVerticalGroup(
+				generationLayout.createSequentialGroup()
+				.addGroup(generationLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+					.addComponent(labelSize)
+					.addComponent(textGenerateNumber)
+					.addComponent(labelLow)
+					.addComponent(textGenerateLow)
+					.addComponent(labelHigh)
+					.addComponent(textGenerateHigh))
+		      .addGroup(generationLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+		      		.addComponent(buttonGenerate))
+			);
+
+		JPanel actionPanel = new JPanel();
+		actionPanel.setBorder(BorderFactory.createTitledBorder("Actions"));
+		controlPanel.add(actionPanel);
+		
+		buttonSort = new JButton("Sort");
+		buttonSort.addActionListener(e -> sort());
+		actionPanel.add(buttonSort);
+		
+		buttonRead = new JButton("Load CSV");
+		buttonRead.addActionListener(e -> readIntegerFromFile());
+		actionPanel.add(buttonRead);
+		
+		buttonClear = new JButton("Clear log");
 		buttonClear.addActionListener(e -> textAreaLog.setText(""));
-		controlPanel.add(buttonClear);
+		actionPanel.add(buttonClear);
 		
 		pick();
 		this.pack();

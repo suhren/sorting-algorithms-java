@@ -1,37 +1,50 @@
 package com.sorting.algorithms;
 
+import java.util.Arrays;
+import java.util.function.Supplier;
+
 public class SortingAlgorithmLibrary {
 	
-	private static final String[] names = { "BubbleSort", "HeapSort", "InsertionSort", "MergeSort", "MergeSortInPlace", "QuickSort", "ShellSort", "SelectionSort", "CountingSort", "RadixSort" };
+	public enum Algorithm implements Supplier<SortingAlgorithm<Integer>> {
+		BUBBLE_SORT			("BubbleSort", 			() -> new BubbleSort<Integer>()),
+		HEAP_SORT			("HeapSort", 			() -> new HeapSort<Integer>()),
+		INSERTION_SORT		("InsertionSort", 		() -> new InsertionSort<Integer>()),
+		MERGE_SORT			("MergeSort", 			() -> new MergeSort<Integer>()),
+		MERGE_SORT_IN_PLACE	("MergeSortInPlace", 	() -> new MergeSortInPlace<Integer>()),
+		QUICK_SORT			("QuickSort", 			() -> new QuickSort<Integer>()),
+		SHELL_SORT			("ShellSort", 			() -> new ShellSort<Integer>()),
+		SELECTION_SORT		("SelectionSort", 		() -> new SelectionSort<Integer>()),
+		COUNTING_SORT		("CountingSort", 		() -> new CountingSort()),
+		RADIX_SORT			("RadixSort", 			() -> new RadixSort());
+		
+		private final String code;
+		private final Supplier<SortingAlgorithm<Integer>> supplier;
+		
+		private Algorithm(String code, final Supplier<SortingAlgorithm<Integer>> supplier) {
+			this.code = code;
+			this.supplier = supplier;
+		}
+		public String code() {
+			return code;
+		}
+		public static Algorithm fromCode(String code) {
+			if (code != null)
+				for (Algorithm a : Algorithm.values())
+					if (code.equalsIgnoreCase(a.code))
+						return a;
+			return null;
+		}
+		@Override
+		public SortingAlgorithm<Integer> get() {
+			return supplier.get();
+		}
+	}
 	
 	public static String[] getAlgorithmNames() {
-		return names;
+		return Arrays.stream(Algorithm.values()).map(Algorithm::code).toArray(String[]::new);
 	}
 	
 	public static SortingAlgorithm<Integer> getAlgorithm(String name) {
-		switch (name) {
-		    case "BubbleSort":
-		    	return new BubbleSort<>();
-		    case "HeapSort":
-		    	return new HeapSort<>();
-		    case "InsertionSort":
-		    	return new InsertionSort<>();
-		    case "MergeSort":
-		    	return new MergeSort<>();
-		    case "MergeSortInPlace":
-		    	return new MergeSortInPlace<>();
-		    case "QuickSort":
-		    	return new QuickSort<>();
-		    case "ShellSort":
-		    	return new ShellSort<>();
-		    case "SelectionSort":
-		    	return new SelectionSort<>();
-		    case "CountingSort":
-		    	return new CountingSort();
-		    case "RadixSort":
-		    	return new RadixSort();
-		    default:
-		    	throw new IllegalArgumentException("No such algorihm");
-		}
+		return Algorithm.fromCode(name).get();
 	}
 }

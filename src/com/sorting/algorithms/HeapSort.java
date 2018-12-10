@@ -14,7 +14,7 @@ public class HeapSort<E extends Comparable<? super E>> extends SortingAlgorithm<
 	}
 	
 	private void heapSort(E[] a, int n) {
-		// Build heap (rearrange array) 
+		// Build a max heap (rearrange array) 
 		for (int i = n / 2 - 1; i >= 0; i--)
 			heapify(a, n, i);
 		// One by one extract an element from heap 

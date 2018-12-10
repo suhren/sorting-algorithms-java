@@ -10,4 +10,5 @@ public interface ISortingAlgorithmListener {
 	<E> void sortCompare(SortingAlgorithm<?> s, int i, int j, E ei, E ej, int c);
 	void sortStart(SortingAlgorithm<?> s);
 	void sortEnd(SortingAlgorithm<?> s);
+	<E> void sortCompare(SortingAlgorithm<?> s, E ei, E ej, int c);
 }

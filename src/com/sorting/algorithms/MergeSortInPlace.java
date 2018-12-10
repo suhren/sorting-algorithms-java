@@ -38,12 +38,6 @@ public class MergeSortInPlace<E extends Comparable<? super E>> extends SortingAl
 	 * and mid+1 is the first index in the right portion.
 	 */
 	private void merge(E[] a, int min, int max, int mid) {
-//		for (int i = min; i <= mid; i++) {
-//			if (compare(a, i, mid + 1) > 0) {
-//				swap(a, i, mid + 1);
-//				push(a, mid + 1, max);
-//			}
-//		}
 		  int left = min;  int right = mid+1;
 	      // One extra check:  can we SKIP the merge?
 	      if (compare(a, mid, right) <= 0)

@@ -89,7 +89,7 @@ public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
 		nComp++;
 		int c = ei.compareTo(ej);
 		if (listener != null)
-			listener.sortCompare(this, -1, -1, ei, ej, c);
+			listener.sortCompare(this, ei, ej, c);
 		return c;
 	}
 	protected void startSort() {

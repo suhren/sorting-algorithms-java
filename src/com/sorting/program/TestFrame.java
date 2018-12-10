@@ -294,7 +294,7 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 		this.data = data;
 		graphicsPanel.setData(data);
 		graphicsPanel.setLastAccessed(-1);
-		graphicsPanel.refresh();
+		graphicsPanel.refreshAll();
 		printLine("Loaded data with " + data.length + " elements.");
 	}
 	private <E> String arrayToString(E[] data) {
@@ -305,9 +305,11 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 		return s.toString();
 	}
 	private void sort() {
-		if (data != null && data.length > 0)
-			sortingAlgorithm.sortArray(data, this);
-		else
+		if (data != null && data.length > 0) {
+			//sortingAlgorithm.sortArray(data, this);
+			Thread sortThread = new Thread(new SortOperation(sortingAlgorithm, data, this)); 
+			sortThread.run();
+		} else
 			print("No data specified.");
 	}
 	public void readIntegerFromFile() {
@@ -336,7 +338,7 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 			printLine("Loaded array with " + data.length + " elements from " + fc.getSelectedFile().getName() + ".");
 			graphicsPanel.setData(data);
 			graphicsPanel.setLastAccessed(-1);
-			graphicsPanel.refresh();
+			graphicsPanel.refreshAll();
 			textAreaInput.setText(arrayToString(data));
 		}
 	}
@@ -358,7 +360,7 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 		
 		if (drawWhileSorting) {
 			graphicsPanel.setLastAccessed(i);
-			graphicsPanel.refresh();
+			graphicsPanel.refresh(i);
 			if (delay > 0) {
 				try {
 					Thread.sleep(delay);
@@ -378,7 +380,7 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 		
 		if (drawWhileSorting) {
 			graphicsPanel.setLastAccessed(i);
-			graphicsPanel.refresh();
+			graphicsPanel.refresh(i, j);
 			if (delay > 0) {
 				try {
 					Thread.sleep(delay);
@@ -397,7 +399,7 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 		
 		if (drawWhileSorting) {
 			graphicsPanel.setLastAccessed(i);
-			graphicsPanel.refresh();
+			graphicsPanel.refresh(i, j);
 			if (delay > 0) {
 				try {
 					Thread.sleep(delay);
@@ -407,6 +409,15 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 			}
 		}
 	}
+	
+	@Override
+	public <E> void sortCompare(SortingAlgorithm<?> s, E ei, E ej, int c) {
+		if (eventPrintout) {
+			String t = (c > 0) ? " > " : (c < 0) ? " < " : " == ";
+			printStatus(s, "Compared " + ei + t + ej);
+		}
+	}
+	
 	@Override
 	public void sortStart(SortingAlgorithm<?> s) {
 		if (startEndPrintout) {
@@ -432,12 +443,12 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 		this.data = res;
 		
 		graphicsPanel.setData(res);
-		graphicsPanel.refresh();
+		graphicsPanel.refreshAll();
 	}
 	
 	private void printStatus(SortingAlgorithm<?> s, String t) {
 		printLine(s.getElapsedTime() + "ms: " + s.getID() + ": " + t);
-		graphicsPanel.refresh();
+		graphicsPanel.refreshAll();
 	}	
 	private void printLine(String s) {
 		print(s + "\n");

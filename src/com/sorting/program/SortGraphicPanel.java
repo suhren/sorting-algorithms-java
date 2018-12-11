@@ -6,6 +6,8 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -20,6 +22,7 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 	private boolean rainbow = true;
 	private int currentIndex = 0;
 	private int currentX, currentY, currentWidth, currentHeight;
+	private List<Integer> indexBuffer = new ArrayList<>();
 	
 	public SortGraphicPanel(int width, int height) {
 		super();
@@ -32,9 +35,9 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 		int old = this.iLastAccessed;
 		this.iLastAccessed = iLastAccessed;
 		if (old != -1)
-			drawBar(old);
+			indexBuffer.add(old);
 		if (iLastAccessed != -1)
-			drawBar(iLastAccessed);
+			indexBuffer.add(iLastAccessed);
 	}
 	
 	public void setData(Integer[] data) {
@@ -59,24 +62,30 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 	public void refreshAll() {
 		if (data != null)
 			for (int i = 0; i < data.length; i++)
-				drawBar(i);
+				indexBuffer.add(i);
+		redraw();
 	}
 	public void refresh(int i) {
-		drawBar(i);
+		indexBuffer.add(i);
+		redraw();
 	}
 	public void refresh(int i, int j) {
-		drawBar(i);
-		drawBar(j);
+		indexBuffer.add(i);
+		indexBuffer.add(j);
+		redraw();
 	}
-	public void drawBar(int i) {
-		currentIndex = i;
-		double w = this.getWidth() * 1.0 / data.length;
-		currentX = (int)(i * w);
-		currentHeight = this.getHeight() * data[i].intValue() / dataMax;
-		currentY = this.getHeight() - currentHeight;
-		currentWidth = (int)Math.ceil(w);
-		
-		this.paintImmediately(new Rectangle(currentX, 0, currentWidth, this.getHeight()));
+	public void redraw() {
+		for (Integer i : indexBuffer) {
+			currentIndex = i;
+			double w = this.getWidth() * 1.0 / data.length;
+			currentX = (int)(i * w);
+			currentHeight = this.getHeight() * data[i].intValue() / dataMax;
+			currentY = this.getHeight() - currentHeight;
+			currentWidth = (int)Math.ceil(w);
+			
+			this.paintImmediately(new Rectangle(currentX, 0, currentWidth, this.getHeight()));
+		}
+		indexBuffer.clear();
 	}
 	
 	@Override

@@ -29,29 +29,29 @@ import com.sorting.algorithms.*;
 import com.sorting.util.*;
 
 public class TestFrame extends JFrame implements SortingOperationListener {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private SortGraphicPanel graphicsPanel;
 	private JFormattedTextField textGenerateNumber, textGenerateLow, textGenerateHigh, textDelay;
 	public JTextArea textAreaLog, textAreaInput, textAreaOutput;
 	public JScrollPane scrollAreaLog, scrollAreaInput, scrollAreaOutput;
-	
+
 	private boolean drawBarOutline = true;
 	private boolean drawBarRainbow = true;
 	private boolean drawWhileSorting = true;
 	private boolean startEndPrintout = true;
 	private boolean eventPrintout = false;
 	private boolean arrayPrintout = false;
-	
+
 	private int delay = 0;
 	private Integer[] data;
 	private SortingAlgorithm<Integer> sortingAlgorithm;
-	
+
 	public TestFrame() {
 		setupFrame();
 	}
-	
+
 	private void setupFrame() {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -230,7 +230,7 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 		sortingAlgorithm = SortingAlgorithmLibrary.getAlgorithm((String) comboBoxSort.getSelectedItem());
 		this.pack();
 	}
-	
+
 	private void reload() {
 		List<Integer> res = new ArrayList<>();
 		Scanner sc = new Scanner(textAreaInput.getText());
@@ -242,7 +242,7 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 			temp[i] = res.get(i);
 		loadData(temp);
 	}
-	
+
 	private void generate() {
 		int n = ((Number) textGenerateNumber.getValue()).intValue();
 		int low = ((Number) textGenerateLow.getValue()).intValue();
@@ -258,41 +258,39 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 		loadData(data);
 		textAreaInput.setText(Utils.arrayToString(data));
 	}
-	
+
 	private void loadData(Integer[] data) {
 		this.data = data;
 		graphicsPanel.setData(data);
 		printLineLog("Loaded data with " + data.length + " elements.");
 	}
-	
+
 	private void sort() {
 		/*
-		 * 2018-12-17
-		 * Common Pitfall: Calling run() Instead of start() When creating and starting a
-		 * thread a common mistake is to call the run()method of the Thread instead of
-		 * start(), like this:
+		 * 2018-12-17 Common Pitfall: Calling run() Instead of start() When creating and
+		 * starting a thread a common mistake is to call the run()method of the Thread
+		 * instead of start(), like this:
 		 * 
 		 * Thread newThread = new Thread(MyRunnable()); newThread.run(); //should be
 		 * start();
 		 * 
-		 * At first you may not notice anything because the Runnable's run()
-		 * method is executed like you expected. However, it is NOT executed by the new
-		 * thread you just created. Instead the run() method is executed by the thread
-		 * that created the thread. In other words, the thread that executed the above
-		 * two lines of code. To have the run() method of the MyRunnable instance called
-		 * by the new created thread, newThread, you MUST call the newThread.start()
-		 * method.
+		 * At first you may not notice anything because the Runnable's run() method is
+		 * executed like you expected. However, it is NOT executed by the new thread you
+		 * just created. Instead the run() method is executed by the thread that created
+		 * the thread. In other words, the thread that executed the above two lines of
+		 * code. To have the run() method of the MyRunnable instance called by the new
+		 * created thread, newThread, you MUST call the newThread.start() method.
 		 */
 
 		if (data != null && data.length > 0) {
-			Thread sortThread = new Thread(new SortingOperation(sortingAlgorithm, data, this, graphicsPanel, delay,
-					startEndPrintout, eventPrintout, arrayPrintout), "SortingOperation");
-			sortThread.start();
-			//sortThread.run();
+			Thread sortThread = new Thread(new SortingOperation(sortingAlgorithm, data, this, delay, startEndPrintout,
+					eventPrintout, arrayPrintout), "SortingOperation");
+			sortThread.start(); 
+			// sortThread.run();
 		} else
 			printLineLog("No data specified.");
 	}
-	
+
 	public void readIntegerFromFile() {
 		JFileChooser fc = new JFileChooser();
 		fc.setAcceptAllFileFilterUsed(false);
@@ -321,23 +319,29 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 			textAreaInput.setText(Utils.arrayToString(data));
 		}
 	}
-	
+
 	private void printLineLog(String s) {
 		textAreaLog.append(s + "\n");
 	}
-	
+
 	@Override
-	public void operationEvent(SortingOperation op) {
-		for (String s : op.getEventBuffer())
-			textAreaLog.append(s + "\n");
-		op.getEventBuffer().clear();
+	public void operationEvent(SortingOperation op, String message) {
+		textAreaLog.append(message + "\n");
 	}
-	
+
 	@Override
-	public void operationRequestRedraw(SortingOperation op) {
-//		graphicsPanel.refresh(op.getIndexBuffer());
-//		graphicsPanel.repaint();
-//		op.getIndexBuffer().clear();
+	public void operationRequestRedraw(SortingOperation op, int i) {
+		graphicsPanel.buffer(i);
+	}
+
+	@Override
+	public void operationRequestRedraw(SortingOperation op, int i, int j) {
+		graphicsPanel.buffer(i, j);
+	}
+
+	@Override
+	public void operationRequestRedrawAll(SortingOperation op) {
+		graphicsPanel.refreshNow();
 	}
 
 	@Override

@@ -7,10 +7,8 @@ import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.swing.JPanel;
 
@@ -62,20 +60,23 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 	}
 	public void buffer(int i) {
 		indexBuffer.add(i);
-		indexBuffer.add(lastAccessedIndex);
+		if (lastAccessedIndex != -1)
+			indexBuffer.add(lastAccessedIndex);
 		lastAccessedIndex = i;
 		this.repaint();
 	}
 	public void buffer(int i, int j) {
 		indexBuffer.add(i);
 		indexBuffer.add(j);
-		indexBuffer.add(lastAccessedIndex);
+		if (lastAccessedIndex != -1)
+			indexBuffer.add(lastAccessedIndex);
 		lastAccessedIndex = i;
 		this.repaint();
 	}
 	public void buffer(List<Integer> list) {
 		indexBuffer.addAll(list);
-		indexBuffer.add(lastAccessedIndex);
+		if (lastAccessedIndex != -1)
+			indexBuffer.add(lastAccessedIndex);
 		lastAccessedIndex = list.get(list.size() - 1);
 		this.repaint();
 	}
@@ -90,18 +91,28 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 	
 	@Override
     public void paintComponent(Graphics g) {
-
+		super.paintComponent(g);
+		
         if (indexBuffer != null && indexBuffer.size() > 0) {
-	        List<Integer> indices = indexBuffer.stream().collect(Collectors.toList());
+        	List<Integer> indices = new ArrayList<>();
+        	
+        	for (int i = 0; i < indexBuffer.size(); i++)
+        		indices.add(indexBuffer.get(i));
+        	
 	        indexBuffer.clear();
+	        
 			double w = this.getWidth() * 1.0 / data.length;
 			
 			for (int i = 0; i < indices.size(); i++) {
+		        
 				int currentIndex = indices.get(i);
 				int currentWidth = (int)Math.ceil(w);
 				int currentHeight = this.getHeight() * data[currentIndex].intValue() / dataMax;
 				int currentX = (int)(currentIndex * w);
 				int currentY = this.getHeight() - currentHeight;
+				
+				g.setClip(currentX, 0, currentWidth, this.getHeight());
+		        //super.paintComponent(g);
 				
 				g.setColor(Color.BLACK);
 				g.fillRect(currentX, 0, currentWidth, this.getHeight());
@@ -122,7 +133,6 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 		        
 	        }
 		}
-        super.paintComponent(g);
     }
 
 	public void setOutline(boolean enabled) {

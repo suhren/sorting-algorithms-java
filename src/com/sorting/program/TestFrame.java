@@ -339,4 +339,9 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 //		graphicsPanel.repaint();
 //		op.getIndexBuffer().clear();
 	}
+
+	@Override
+	public void operationDone(SortingOperation op) {
+		graphicsPanel.refreshNow();
+	}
 }

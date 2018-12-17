@@ -4,5 +4,6 @@ import com.sorting.program.SortingOperation;
 
 public interface SortingOperationListener {
 	void operationEvent(SortingOperation op);
+	void operationDone(SortingOperation op);
 	void operationRequestRedraw(SortingOperation op);
 }

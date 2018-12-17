@@ -143,13 +143,13 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 		if (bufferEventArray)
 			eventBuffer.add(generateStatusString(s, s.toString()));
 		listener.operationEvent(this);
-		//panel.refreshNow();
 		
 		Integer[] res = new Integer[s.data().length];
 		for (int i = 0; i < res.length; i++)
 			res[i] = (Integer)s.data()[i];
 		
 		this.data = res;
+		listener.operationDone(this);
 	}
 	
 	private String generateStatusString(SortingAlgorithm<?> s, String t) {

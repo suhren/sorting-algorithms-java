@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -59,58 +60,83 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 			colorLookup[data[i]] = Color.getHSBColor(data[i] * 1.0f / (dataMax - dataMin), 1.0f, 1.0f);
 	}
 	
-	public void refreshAll() {
+	public void bufferAll() {
 		if (data != null)
 			for (int i = 0; i < data.length; i++)
 				indexBuffer.add(i);
-		redraw();
+//		this.repaint();
+//		redraw();
 	}
-	public void refresh(int i) {
+	public void buffer(int i) {
 		indexBuffer.add(i);
-		redraw();
+//		this.repaint();
+//		redraw();
 	}
-	public void refresh(int i, int j) {
+	public void buffer(int i, int j) {
 		indexBuffer.add(i);
 		indexBuffer.add(j);
-		redraw();
+//		this.repaint();
+//		redraw();
 	}
-	public void redraw() {
-		for (Integer i : indexBuffer) {
-			currentIndex = i;
-			double w = this.getWidth() * 1.0 / data.length;
-			currentX = (int)(i * w);
-			currentHeight = this.getHeight() * data[i].intValue() / dataMax;
-			currentY = this.getHeight() - currentHeight;
-			currentWidth = (int)Math.ceil(w);
-			
-			this.paintImmediately(new Rectangle(currentX, 0, currentWidth, this.getHeight()));
-		}
-		indexBuffer.clear();
+	public void buffer(List<Integer> list) {
+		indexBuffer.addAll(list);
+//		this.repaint();
+//		redraw();
 	}
+	public void refreshNow() {
+		if (data != null)
+			for (int i = 0; i < data.length; i++)
+				indexBuffer.add(i);
+		this.paintImmediately(new Rectangle(0, 0, this.getWidth(), this.getHeight()));
+	}
+//	public void redraw() {
+//		for (Integer i : indexBuffer) {
+//			currentIndex = i;
+//			double w = this.getWidth() * 1.0 / data.length;
+//			currentX = (int)(i * w);
+//			currentHeight = this.getHeight() * data[i].intValue() / dataMax;
+//			currentY = this.getHeight() - currentHeight;
+//			currentWidth = (int)Math.ceil(w);
+//			
+//			this.paintImmediately(new Rectangle(currentX, 0, currentWidth, this.getHeight()));
+//		}
+//		indexBuffer.clear();
+//	}
 	
 	@Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
-        g.setColor(Color.BLACK);
-        g.fillRect(currentX, 0, currentWidth, this.getHeight());
-        
-        if (data != null && data.length > 0) {
-	        if (currentIndex == iLastAccessed)
-	        	g.setColor(Color.GREEN);
-	        else if (rainbow)
-	        	g.setColor(colorLookup[data[currentIndex]]);
-	        else
-	        	g.setColor(Color.RED);
+		
+        for (Integer i : indexBuffer) {
+			int currentIndex = i;
+			double w = this.getWidth() * 1.0 / data.length;
+			int currentX = (int)(i * w);
+			int currentHeight = this.getHeight() * data[i].intValue() / dataMax;
+			int currentY = this.getHeight() - currentHeight;
+			int currentWidth = (int)Math.ceil(w);
+			
+			g.setColor(Color.BLACK);
+	        g.fillRect(currentX, 0, currentWidth, this.getHeight());
 	        
-	        g.fillRect(currentX, currentY, currentWidth, currentHeight);
-	        
-	        if (outline && currentWidth >= 2) {
-		        g.setColor(Color.BLACK);
-		        g.drawRect(currentX, currentY, currentWidth, currentHeight);
+	        if (data != null && data.length > 0) {
+		        if (currentIndex == iLastAccessed)
+		        	g.setColor(Color.GREEN);
+		        else if (rainbow)
+		        	g.setColor(colorLookup[data[currentIndex]]);
+		        else
+		        	g.setColor(Color.RED);
+		        
+		        g.fillRect(currentX, currentY, currentWidth, currentHeight);
+		        
+		        if (outline && currentWidth >= 2) {
+			        g.setColor(Color.BLACK);
+			        g.drawRect(currentX, currentY, currentWidth, currentHeight);
+		        }
 	        }
-        }
+		}
         
+        indexBuffer.clear();
+                
 //        if (data != null && data.length > 0) {
 //			double w = this.getWidth() * 1.0 / data.length;
 //			
@@ -140,17 +166,17 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 
 	public void setOutline(boolean enabled) {
 		this.outline = enabled;
-		this.refreshAll();
+		this.refreshNow();
 	}
 
 	public void setRainbow(boolean enabled) {
 		this.rainbow = enabled;
-		this.refreshAll();
+		this.refreshNow();
 	}
 
 	@Override
 	public void componentResized(ComponentEvent e) {
-		this.refreshAll();
+		this.refreshNow();
 	}
 
 	@Override

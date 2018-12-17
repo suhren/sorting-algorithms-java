@@ -1,9 +1,9 @@
 package com.sorting.algorithms;
 
-import com.sorting.util.ISortingAlgorithmListener;
+import com.sorting.util.SortingAlgorithmListener;
 
 public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
-	private ISortingAlgorithmListener listener; 
+	private SortingAlgorithmListener listener; 
 	private E[] data;
 	private int nComp = 0;
 	private int nSwap = 0;
@@ -19,7 +19,7 @@ public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
 		this.id = id;
 	}
 	
-	public E[] sortArray(E[] a, ISortingAlgorithmListener listener) {
+	public E[] sortArray(E[] a, SortingAlgorithmListener listener) {
 		this.timeStart = 0;
 		this.timeEnd = 0;
 		this.sorted = false;

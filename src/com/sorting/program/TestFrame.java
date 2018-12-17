@@ -28,25 +28,25 @@ import javax.swing.JFormattedTextField;
 import com.sorting.algorithms.*;
 import com.sorting.util.*;
 
-public class TestFrame extends JFrame implements ISortingAlgorithmListener {
+public class TestFrame extends JFrame implements SortingOperationListener {
 	
 	private static final long serialVersionUID = 1L;
 	
 	private SortGraphicPanel graphicsPanel;
 	private JFormattedTextField textGenerateNumber, textGenerateLow, textGenerateHigh, textDelay;
-	private JTextArea textAreaLog, textAreaInput, textAreaOutput;
-	private JScrollPane scrollAreaLog, scrollAreaInput, scrollAreaOutput;
+	public JTextArea textAreaLog, textAreaInput, textAreaOutput;
+	public JScrollPane scrollAreaLog, scrollAreaInput, scrollAreaOutput;
 	
 	private boolean drawBarOutline = true;
 	private boolean drawBarRainbow = true;
+	private boolean drawWhileSorting = true;
 	private boolean startEndPrintout = true;
 	private boolean eventPrintout = false;
 	private boolean arrayPrintout = false;
-	private boolean drawWhileSorting = true;
 	
 	private int delay = 0;
     private Integer[] data;
-	private SortingAlgorithm<Integer> sortingAlgorithm;	
+	private SortingAlgorithm<Integer> sortingAlgorithm;
 	
 	public TestFrame() {
         setupFrame();
@@ -284,34 +284,27 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 		for (int i = 0; i < n; i++)
 			data[i] = low + rand.nextInt(high - low + 1);
 		
-		printLine("Generated array with " + n + " elements from " + low + " to " + high + ".");
+		printLineLog("Generated array with " + n + " elements from " + low + " to " + high + ".");
 		
 		loadData(data);
-		textAreaInput.setText(arrayToString(data));
-		
+		textAreaInput.setText(Utils.arrayToString(data));
 	}
 	private void loadData(Integer[] data) {
 		this.data = data;
 		graphicsPanel.setData(data);
 		graphicsPanel.setLastAccessed(-1);
-		graphicsPanel.refreshAll();
-		printLine("Loaded data with " + data.length + " elements.");
+		graphicsPanel.refreshNow();
+		printLineLog("Loaded data with " + data.length + " elements.");
 	}
-	private <E> String arrayToString(E[] data) {
-		StringBuilder s = new StringBuilder();
-		for (int i = 0; i < data.length - 1; i++)
-			s.append(data[i].toString() + " ");
-		s.append(data[data.length - 1]);
-		return s.toString();
-	}
+	
 	private void sort() {
 		if (data != null && data.length > 0) {
-			//sortingAlgorithm.sortArray(data, this);
-			Thread sortThread = new Thread(new SortOperation(sortingAlgorithm, data, this)); 
+			Thread sortThread = new Thread(new SortingOperation(sortingAlgorithm, data, this, graphicsPanel, delay, startEndPrintout, eventPrintout, arrayPrintout)); 
 			sortThread.run();
 		} else
-			print("No data specified.");
+			printLineLog("No data specified.");
 	}
+	
 	public void readIntegerFromFile() {
 		JFileChooser fc = new JFileChooser();
 		fc.setAcceptAllFileFilterUsed(false);
@@ -335,127 +328,29 @@ public class TestFrame extends JFrame implements ISortingAlgorithmListener {
 				temp[i] = input.get(i);
 				
 			data = temp;
-			printLine("Loaded array with " + data.length + " elements from " + fc.getSelectedFile().getName() + ".");
+			printLineLog("Loaded array with " + data.length + " elements from " + fc.getSelectedFile().getName() + ".");
 			graphicsPanel.setData(data);
 			graphicsPanel.setLastAccessed(-1);
-			graphicsPanel.refreshAll();
-			textAreaInput.setText(arrayToString(data));
+			graphicsPanel.refreshNow();
+			textAreaInput.setText(Utils.arrayToString(data));
 		}
 	}
 	
-	@Override
-	public <E> void sortMessage(SortingAlgorithm<?> s, String message) {
-		if (eventPrintout)
-			printStatus(s, message);
-	}	
-	@Override
-	public <E> void sortGet(SortingAlgorithm<?> s, int i, E ei) {
-		if (eventPrintout)
-			printStatus(s, "Get " + i + ":" + ei);
+	private void printLineLog(String s) {
+		textAreaLog.append(s + "\n");
 	}
+
 	@Override
-	public <E> void sortSet(SortingAlgorithm<?> s, int i, E prev, E next) {
-		if (eventPrintout)
-			printStatus(s, "Set " + i + ":" + prev + " to " + i + ":" + next);
-		
-		if (drawWhileSorting) {
-			graphicsPanel.setLastAccessed(i);
-			graphicsPanel.refresh(i);
-			if (delay > 0) {
-				try {
-					Thread.sleep(delay);
-		        } catch(Exception e) {
-		        	
-		        }
-			}
-		}
+	public void operationEvent(SortingOperation op) {
+		for (String s : op.getEventBuffer())
+			textAreaLog.append(s + "\n");
+		op.getEventBuffer().clear();
 	}
+
 	@Override
-	public <E> void sortSwap(SortingAlgorithm<?> s, int i, int j, E ei, E ej) {
-		if (eventPrintout) {
-			printStatus(s, "Swapped " + i + ":" + ei + " <-> " + j + ":" + ej);
-			if (arrayPrintout)
-				printStatus(s, s.toString());
-		}
-		
-		if (drawWhileSorting) {
-			graphicsPanel.setLastAccessed(i);
-			graphicsPanel.refresh(i, j);
-			if (delay > 0) {
-				try {
-					Thread.sleep(delay);
-		        } catch(Exception e) {
-		        	
-		        }
-			}
-		}
-	}
-	@Override
-	public <E> void sortCompare(SortingAlgorithm<?> s, int i, int j, E ei, E ej, int c) {
-		if (eventPrintout) {
-			String t = (c > 0) ? " > " : (c < 0) ? " < " : " == ";
-			printStatus(s, "Compared " + i + ":" + ei + t + j + ":" + ej);
-		}
-		
-		if (drawWhileSorting) {
-			graphicsPanel.setLastAccessed(i);
-			graphicsPanel.refresh(i, j);
-			if (delay > 0) {
-				try {
-					Thread.sleep(delay);
-		        } catch(Exception e) {
-		        	
-		        }
-			}
-		}
-	}
-	
-	@Override
-	public <E> void sortCompare(SortingAlgorithm<?> s, E ei, E ej, int c) {
-		if (eventPrintout) {
-			String t = (c > 0) ? " > " : (c < 0) ? " < " : " == ";
-			printStatus(s, "Compared " + ei + t + ej);
-		}
-	}
-	
-	@Override
-	public void sortStart(SortingAlgorithm<?> s) {
-		if (startEndPrintout) {
-			printStatus(s, "Started sort of array with " + s.data().length + " elements.");
-			if (arrayPrintout)
-				printStatus(s, s.toString());
-		}
-	}
-	@Override
-	public void sortEnd(SortingAlgorithm<?> s) {
-		textAreaOutput.setText(arrayToString(data));
-		
-		if (startEndPrintout) {
-			printStatus(s, "Sorted with " + s.nGet() + " Gets, " + s.nSet() + " Sets, " + s.nComp() + " Comparisions, and " + s.nSwap() + " Swaps.");
-			if (arrayPrintout)
-				printStatus(s, s.toString());
-		}
-		
-		Integer[] res = new Integer[s.data().length];
-		for (int i = 0; i < res.length; i++)
-			res[i] = (Integer)s.data()[i];
-		
-		this.data = res;
-		
-		graphicsPanel.setData(res);
-		graphicsPanel.refreshAll();
-	}
-	
-	private void printStatus(SortingAlgorithm<?> s, String t) {
-		printLine(s.getElapsedTime() + "ms: " + s.getID() + ": " + t);
-		graphicsPanel.refreshAll();
-	}	
-	private void printLine(String s) {
-		print(s + "\n");
-	}
-	private void print(String s) {
-		textAreaLog.append(s);
-		scrollAreaLog.paintImmediately(scrollAreaLog.getBounds());
-		textAreaLog.paintImmediately(textAreaLog.getBounds());
+	public void operationRequestRedraw(SortingOperation op) {
+//		graphicsPanel.refresh(op.getIndexBuffer());
+//		graphicsPanel.repaint();
+//		op.getIndexBuffer().clear();
 	}
 }

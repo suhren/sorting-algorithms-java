@@ -3,6 +3,7 @@ package com.sorting.program;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.NumberFormat;
@@ -22,6 +23,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JFormattedTextField;
 
@@ -212,11 +216,20 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 						.addComponent(buttonGenerate)));
 
 		JPanel actionPanel = new JPanel();
-		actionPanel.setBorder(BorderFactory.createTitledBorder("Actions"));
+		Border title = BorderFactory.createTitledBorder("Actions");
+		Border margin = new EmptyBorder(8, 8, 8, 8);
+		actionPanel.setBorder(new CompoundBorder(title, margin));
+		GridLayout actionGridLayout = new GridLayout(2, 3);
+		actionGridLayout.setVgap(8);
+		actionGridLayout.setHgap(8);
+		actionPanel.setLayout(actionGridLayout);
+		
 		controlPanel.add(actionPanel);
 		JButton buttonSort = new JButton("Sort");
-		buttonSort.addActionListener(e -> sort());
 		actionPanel.add(buttonSort);
+		buttonSort.addActionListener(e -> sort());
+		JButton buttonStop = new JButton("Stop");
+		actionPanel.add(buttonStop);
 		JButton buttonReload = new JButton("Reload input");
 		buttonReload.addActionListener(e -> reload());
 		actionPanel.add(buttonReload);
@@ -326,7 +339,7 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 
 	@Override
 	public void operationEvent(SortingOperation op, String message) {
-		textAreaLog.append(message + "\n");
+		printLineLog(message);
 	}
 
 	@Override

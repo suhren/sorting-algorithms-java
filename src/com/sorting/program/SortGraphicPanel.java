@@ -86,12 +86,12 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 			for (int i = 0; i < data.length; i++)
 				indexBuffer.add(i);
 		lastAccessedIndex = -1;
-		this.paintImmediately(new Rectangle(0, 0, this.getWidth(), this.getHeight()));
+		this.repaint();
 	}
 	
 	@Override
     public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+//		super.paintComponent(g);
 		
         if (indexBuffer != null && indexBuffer.size() > 0) {
         	List<Integer> indices = new ArrayList<>();
@@ -111,7 +111,7 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 				int currentX = (int)(currentIndex * w);
 				int currentY = this.getHeight() - currentHeight;
 				
-				g.setClip(currentX, 0, currentWidth, this.getHeight());
+				// g.setClip(currentX, 0, currentWidth, this.getHeight());
 		        //super.paintComponent(g);
 				
 				g.setColor(Color.BLACK);

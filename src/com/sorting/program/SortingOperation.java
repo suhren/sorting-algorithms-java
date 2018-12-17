@@ -18,6 +18,7 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 	private boolean bufferEventOperation = false;
 	private boolean bufferEventArray = false;
 
+	private volatile boolean running = true;
 	private String outputString;
 
 	public SortingOperation(SortingAlgorithm<Integer> sortingAlgorithm, Integer[] data,
@@ -32,6 +33,9 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 		this.bufferEventArray = logArray;
 	}
 
+	public void abort() {
+		this.running = false;
+	}
 	public void setBufferEventStartEnd(boolean enabled) {
 		this.bufferEventStartEnd = enabled;
 	}

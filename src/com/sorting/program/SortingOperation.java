@@ -24,8 +24,6 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 	
 	private List<String> eventBuffer = new ArrayList<>();
 	private String outputString;
-	private List<Integer> indexBuffer = new ArrayList<>();
-	private int lastAccessedIndex = 0;
 	
 	public SortingOperation(SortingAlgorithm<Integer> sortingAlgorithm, Integer[] data, SortingOperationListener listener, SortGraphicPanel panel, int delay, boolean logStartEnd, boolean logEvent, boolean logArray) {
 		this.sortingAlgorithm = sortingAlgorithm;
@@ -70,30 +68,25 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 	
 	@Override
 	public <E> void sortMessage(SortingAlgorithm<?> s, String message) {
-//		if (bufferEventMessage)
-//			eventBuffer.add(generateStatusString(s, message));
-//		listener.operationEvent(this);
+		if (bufferEventMessage)
+			eventBuffer.add(generateStatusString(s, message));
+		listener.operationEvent(this);
 	}	
 	@Override
 	public <E> void sortGet(SortingAlgorithm<?> s, int i, E ei) {
 		if (bufferEventOperation)
 			eventBuffer.add(generateStatusString(s, "Get " + i + ":" + ei));
-//		listener.operationEvent(this);
+		listener.operationEvent(this);
 	}
 	@Override
 	public <E> void sortSet(SortingAlgorithm<?> s, int i, E prev, E next) {
 		if (bufferEventOperation)
 			eventBuffer.add(generateStatusString(s, "Set " + i + ":" + prev + " to " + i + ":" + next));
 		
-		panel.setLastAccessed(i);
 		panel.buffer(i);
 		panel.repaint();
-//		listener.operationEvent(this);
-		
-//		lastAccessedIndex = i;
-//		indexBuffer.add(i);
-//		listener.operationEvent(this);
-//		listener.operationRequestRedraw(this);
+		listener.operationEvent(this);
+		listener.operationRequestRedraw(this);
 		
 		delay();
 	}
@@ -105,16 +98,10 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 		if (bufferEventArray)
 			eventBuffer.add(generateStatusString(s, s.toString()));
 		
-		panel.setLastAccessed(i);
 		panel.buffer(i, j);
 		panel.repaint();
-		System.out.println("SWAP REPAINT");
-//		listener.operationEvent(this);
-		
-//		lastAccessedIndex = i;
-//		indexBuffer.add(i);
-//		indexBuffer.add(j);
-//		listener.operationRequestRedraw(this);
+		listener.operationEvent(this);
+		listener.operationRequestRedraw(this);
 		
 		delay();
 	}
@@ -125,26 +112,20 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 			eventBuffer.add(generateStatusString(s, "Compared " + i + ":" + ei + t + j + ":" + ej));
 		}
 		
-		panel.setLastAccessed(i);
 		panel.buffer(i);
 		panel.repaint();
-//		listener.operationEvent(this);
-		
-//		lastAccessedIndex = i;
-//		indexBuffer.add(i);
+		listener.operationEvent(this);
 		
 		delay();
 	}
-	
 	@Override
 	public <E> void sortCompare(SortingAlgorithm<?> s, E ei, E ej, int c) {
 		if (bufferEventOperation) {
 			String t = (c > 0) ? " > " : (c < 0) ? " < " : " == ";
 			eventBuffer.add(generateStatusString(s, "Compared " + ei + t + ej));
 		}
-//		listener.operationEvent(this);
+		listener.operationEvent(this);
 	}
-	
 	@Override
 	public void sortStart(SortingAlgorithm<?> s) {
 		if (bufferEventStartEnd)
@@ -162,7 +143,7 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 		if (bufferEventArray)
 			eventBuffer.add(generateStatusString(s, s.toString()));
 		listener.operationEvent(this);
-		panel.refreshNow();
+		//panel.refreshNow();
 		
 		Integer[] res = new Integer[s.data().length];
 		for (int i = 0; i < res.length; i++)
@@ -170,6 +151,7 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 		
 		this.data = res;
 	}
+	
 	private String generateStatusString(SortingAlgorithm<?> s, String t) {
 		return (s.getElapsedTime() + "ms: " + s.getID() + ": " + t);
 	}
@@ -184,16 +166,8 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 		}
 	}
 	
-	public int getLastAccessedIndex() {
-		return lastAccessedIndex;
-	}
-	
 	public List<String> getEventBuffer() {
 		return eventBuffer;
-	}
-	
-	public List<Integer> getIndexBuffer() {
-		return indexBuffer;
 	}
 	
 	public String getOutput() {

@@ -1,5 +1,8 @@
 package com.sorting.algorithms;
 
+import com.sorting.util.SortAbortedException;
+import com.sorting.util.SortingAlgorithm;
+
 public class CountingSort extends SortingAlgorithm<Integer> {
 
 	public CountingSort() {

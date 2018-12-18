@@ -1,5 +1,8 @@
 package com.sorting.algorithms;
 
+import com.sorting.util.SortAbortedException;
+import com.sorting.util.SortingAlgorithm;
+
 /**
  * The SelectionSort algorithm works by dividing the array into two parts.
  * One part which is sorted at the left of the array and one unsorted at the right.

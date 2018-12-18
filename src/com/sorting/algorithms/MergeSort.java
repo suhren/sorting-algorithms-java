@@ -1,5 +1,8 @@
 package com.sorting.algorithms;
 
+import com.sorting.util.SortAbortedException;
+import com.sorting.util.SortingAlgorithm;
+
 public class MergeSort<E extends Comparable<? super E>> extends SortingAlgorithm<E> {
 
 	public MergeSort() {

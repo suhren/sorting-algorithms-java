@@ -1,5 +1,8 @@
 package com.sorting.algorithms;
 
+import com.sorting.util.SortAbortedException;
+import com.sorting.util.SortingAlgorithm;
+
 /**
  * The InsertionSort algorithm works by dividing the list into the left part which is ordered, 
  * and the right part which is unordered. The algorithm compares the leftmost element in the 

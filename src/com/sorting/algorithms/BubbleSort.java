@@ -1,5 +1,8 @@
 package com.sorting.algorithms;
 
+import com.sorting.util.SortAbortedException;
+import com.sorting.util.SortingAlgorithm;
+
 /**
  * The BubbleSort algorithm works by letting the elements "bubble up" 
  * to the surface of the array. This is done by consecutively comparing 
@@ -23,6 +26,11 @@ public class BubbleSort<E extends Comparable<? super E>> extends SortingAlgorith
 		return a;
 	}
 	
+	/**
+	 * Sort the array using the BubbleSort algorithm.
+	 * @param a The array to sort.
+	 * @throws SortAbortedException
+	 */
 	private void bubbleSort(E[] a) throws SortAbortedException {
 		// Loop for each element in the array
 		for (int i = 0; i < a.length; i++) {

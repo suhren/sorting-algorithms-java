@@ -3,9 +3,9 @@ package com.sorting.program;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,14 +22,20 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 	private boolean rainbow = true;
 	private List<Integer> indexBuffer = Collections.synchronizedList(new ArrayList<>());
 	private int lastAccessedIndex = -1;
+	private BufferedImage screenBuffer;
 	
 	public SortGraphicPanel(int width, int height) {
 		super();
 		this.addComponentListener(this);
 		this.setPreferredSize(new Dimension(width, height));
 		this.setBackground(Color.BLACK);
+		createScreenBuffer(width, height);
 	}
 	
+	private void createScreenBuffer(int width, int height) {
+		screenBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
+	}
+
 	public void setData(Integer[] data) {
 		int n = data.length;
 		dataMin = 0;
@@ -91,9 +97,15 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 	
 	@Override
     public void paintComponent(Graphics g) {
-//		super.paintComponent(g);
+		super.paintComponent(g);
+		drawScreenBuffer();
+		g.drawImage(screenBuffer, 0, 0, null);
+    }
+	
+	private void drawScreenBuffer() {
+		Graphics g = screenBuffer.getGraphics();
 		
-        if (indexBuffer != null && indexBuffer.size() > 0) {
+		if (indexBuffer != null && indexBuffer.size() > 0) {
         	List<Integer> indices = new ArrayList<>();
         	
         	for (int i = 0; i < indexBuffer.size(); i++)
@@ -101,21 +113,21 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
         	
 	        indexBuffer.clear();
 	        
-			double w = this.getWidth() * 1.0 / data.length;
+			double w = screenBuffer.getWidth() * 1.0 / data.length;
 			
 			for (int i = 0; i < indices.size(); i++) {
 		        
 				int currentIndex = indices.get(i);
 				int currentWidth = (int)Math.ceil(w);
-				int currentHeight = this.getHeight() * data[currentIndex].intValue() / dataMax;
+				int currentHeight = screenBuffer.getHeight() * data[currentIndex].intValue() / dataMax;
 				int currentX = (int)(currentIndex * w);
-				int currentY = this.getHeight() - currentHeight;
+				int currentY = screenBuffer.getHeight() - currentHeight;
 				
 				// g.setClip(currentX, 0, currentWidth, this.getHeight());
 		        //super.paintComponent(g);
 				
 				g.setColor(Color.BLACK);
-				g.fillRect(currentX, 0, currentWidth, this.getHeight());
+				g.fillRect(currentX, 0, currentWidth, screenBuffer.getHeight());
 		        
 		        if (i == 0)
 		        	g.setColor(Color.GREEN);
@@ -130,10 +142,9 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 			        g.setColor(Color.BLACK);
 			        g.drawRect(currentX, currentY, currentWidth, currentHeight);
 		        }
-		        
 	        }
 		}
-    }
+	}
 
 	public void setOutline(boolean enabled) {
 		this.outline = enabled;
@@ -147,6 +158,7 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 
 	@Override
 	public void componentResized(ComponentEvent e) {
+		createScreenBuffer(this.getWidth(), this.getHeight());
 		this.refreshNow();
 	}
 

@@ -1,7 +1,7 @@
 package com.sorting.program;
 
-import com.sorting.algorithms.SortAbortedException;
-import com.sorting.algorithms.SortingAlgorithm;
+import com.sorting.util.SortAbortedException;
+import com.sorting.util.SortingAlgorithm;
 import com.sorting.util.SortingAlgorithmListener;
 import com.sorting.util.SortingOperationListener;
 
@@ -55,6 +55,7 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 			sortingAlgorithm.sortArray(data, this);
 		} catch (SortAbortedException e) {
 			listener.operationEvent(this, generateStatusString(sortingAlgorithm, e.getMessage()));
+			listener.operationAborted(this);
 		} 
 		catch (Exception e) {
 			System.out.println("Exception is caught: " + e.getMessage());

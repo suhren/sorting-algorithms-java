@@ -30,7 +30,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultCaret;
 import javax.swing.JFormattedTextField;
 
-import com.sorting.algorithms.*;
 import com.sorting.util.*;
 
 public class TestFrame extends JFrame implements SortingOperationListener {
@@ -369,5 +368,10 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 	public void operationDone(SortingOperation op) {
 		textAreaOutput.setText(Utils.arrayToString(data));
 		graphicsPanel.refreshNow();
+	}
+
+	@Override
+	public void operationAborted(SortingOperation op) {
+		textAreaOutput.setText(Utils.arrayToString(data));
 	}
 }

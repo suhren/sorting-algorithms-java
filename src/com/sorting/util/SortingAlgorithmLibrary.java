@@ -1,7 +1,18 @@
-package com.sorting.algorithms;
+package com.sorting.util;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
+
+import com.sorting.algorithms.BubbleSort;
+import com.sorting.algorithms.CountingSort;
+import com.sorting.algorithms.HeapSort;
+import com.sorting.algorithms.InsertionSort;
+import com.sorting.algorithms.MergeSort;
+import com.sorting.algorithms.MergeSortInPlace;
+import com.sorting.algorithms.QuickSort;
+import com.sorting.algorithms.RadixSort;
+import com.sorting.algorithms.SelectionSort;
+import com.sorting.algorithms.ShellSort;
 
 public class SortingAlgorithmLibrary {
 	

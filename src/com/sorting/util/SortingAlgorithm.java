@@ -1,6 +1,4 @@
-package com.sorting.algorithms;
-
-import com.sorting.util.SortingAlgorithmListener;
+package com.sorting.util;
 
 public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
 	

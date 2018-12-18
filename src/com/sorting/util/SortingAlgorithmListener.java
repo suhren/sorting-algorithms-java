@@ -1,7 +1,5 @@
 package com.sorting.util;
 
-import com.sorting.algorithms.SortingAlgorithm;
-
 public interface SortingAlgorithmListener {
 	<E> void sortMessage(SortingAlgorithm<?> s, String message);
 	<E> void sortGet(SortingAlgorithm<?> s, int i, E ei);

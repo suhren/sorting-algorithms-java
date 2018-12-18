@@ -1,4 +1,4 @@
-package com.sorting.algorithms;
+package com.sorting.util;
 
 public class SortAbortedException extends Exception {
 	private static final long serialVersionUID = 1L;

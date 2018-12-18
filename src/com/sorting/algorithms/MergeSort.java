@@ -7,13 +7,13 @@ public class MergeSort<E extends Comparable<? super E>> extends SortingAlgorithm
 	}
 
 	@Override
-	protected E[] sort(E[] a) {
+	protected E[] sort(E[] a) throws SortAbortedException {
 		if (a != null && a.length > 0)
 			return mergeSort(a);
 		return a;
 	}
 	
-	protected E[] mergeSort(E[] a) {
+	protected E[] mergeSort(E[] a) throws SortAbortedException {
 		if (a.length >= 2) {
 			boolean odd = a.length % 2 != 0;
 			int l1 = a.length / 2;
@@ -34,7 +34,7 @@ public class MergeSort<E extends Comparable<? super E>> extends SortingAlgorithm
 		return a;
 	}
 	
-	private E[] merge(E[] a1, E[] a2) {
+	private E[] merge(E[] a1, E[] a2) throws SortAbortedException {
 		int a1High = a1.length - 1;
 		int a2High = a2.length - 1;
 		E[] res = (E[]) new Comparable[a1.length + a2.length];

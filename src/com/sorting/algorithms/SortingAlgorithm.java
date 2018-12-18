@@ -3,6 +3,7 @@ package com.sorting.algorithms;
 import com.sorting.util.SortingAlgorithmListener;
 
 public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
+	
 	private SortingAlgorithmListener listener; 
 	private E[] data;
 	private int nComp = 0;
@@ -14,12 +15,13 @@ public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
 	private long timeEnd = 0;
 	private boolean sorted = false;
 	private boolean started = false;
+	private boolean aborted = false;
 	
 	public SortingAlgorithm(String id) {
 		this.id = id;
 	}
 	
-	public E[] sortArray(E[] a, SortingAlgorithmListener listener) {
+	public E[] sortArray(E[] a, SortingAlgorithmListener listener) throws SortAbortedException {
 		this.timeStart = 0;
 		this.timeEnd = 0;
 		this.sorted = false;
@@ -35,7 +37,7 @@ public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
 		endSort();
 		return data;
 	};
-	protected abstract E[] sort(E[] a);
+	protected abstract E[] sort(E[] a) throws SortAbortedException;
 	
 	public int nComp() { return nComp; }
 	public int nSwap() { return nSwap; }
@@ -63,14 +65,16 @@ public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
 			listener.sortGet(this, i, a[i]);
 		return a[i];
 	}
-	protected void set(E[] a, int i, E value) {
+	protected void set(E[] a, int i, E value) throws SortAbortedException {
+		checkAborted();
 		E prev = a[i];
 		nSet++;
 		a[i] = value;
 		if (listener != null)
 			listener.sortSet(this, i, prev, value);
 	}
-	protected void swap(E[] a, int i, int j) {
+	protected void swap(E[] a, int i, int j) throws SortAbortedException {
+		checkAborted();
 		nSwap++;
 		E temp = a[i];
 		a[i] = a[j];
@@ -78,33 +82,40 @@ public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
 		if (listener != null)
 			listener.sortSwap(this, i, j, a[j], a[i]);
 	}
-	protected int compare(E[] a, int i, int j) {
+	protected int compare(E[] a, int i, int j) throws SortAbortedException {
+		checkAborted();
 		nComp++;
 		int c = a[i].compareTo(a[j]);
 		if (listener != null)
 			listener.sortCompare(this, i, j, a[i], a[j], c);
 		return c;
 	}
-	protected int compare(E ei, E ej) {
+	protected int compare(E ei, E ej) throws SortAbortedException {
+		checkAborted();
 		nComp++;
 		int c = ei.compareTo(ej);
 		if (listener != null)
 			listener.sortCompare(this, ei, ej, c);
 		return c;
 	}
-	protected void startSort() {
+	protected void startSort() throws SortAbortedException {
+		checkAborted();
 		if (listener != null)
 			listener.sortStart(this);
 		started = true;
 		timeStart = System.currentTimeMillis();
 	}
-	protected void endSort() {
+	protected void endSort() throws SortAbortedException {
+		checkAborted();
 		sorted = true;
 		timeEnd = System.currentTimeMillis();
 		if (listener != null)
 			listener.sortEnd(this);
 	}
 	
+	public void abort() {
+		aborted = true;
+	}
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
@@ -113,5 +124,10 @@ public abstract class SortingAlgorithm<E extends Comparable<? super E>> {
 			s.append(data[i].toString() + ", ");
 		s.append(data[data.length - 1] + " ]");
 		return s.toString();
+	}
+	
+	private void checkAborted() throws SortAbortedException {
+		if (aborted)
+			throw new SortAbortedException();
 	}
 }

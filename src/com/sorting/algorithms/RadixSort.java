@@ -9,13 +9,13 @@ public class RadixSort extends SortingAlgorithm<Integer> {
 	}
 
 	@Override
-	protected Integer[] sort(Integer[] a) {
+	protected Integer[] sort(Integer[] a) throws SortAbortedException {
 		if (a != null && a.length > 1)
 			radixSort(a, a.length);
 		return a;
 	}
 	
-	private void radixSort(Integer[] a, int n) {
+	private void radixSort(Integer[] a, int n) throws SortAbortedException {
 		// Find the maximum number to know number of digits.
 		int iMax = 0;
 		for (int i = 0; i < n; i++)
@@ -30,7 +30,7 @@ public class RadixSort extends SortingAlgorithm<Integer> {
 			countingSort(a, n, exp);
 	}
 	
-	private void countingSort(Integer[] a, int n, int exp) {
+	private void countingSort(Integer[] a, int n, int exp) throws SortAbortedException {
 		Integer[] output = new Integer[n];
 		
 		// Initialize a count array with zeroes.

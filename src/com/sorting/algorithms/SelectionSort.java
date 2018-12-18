@@ -18,13 +18,13 @@ public class SelectionSort<E extends Comparable<? super E>> extends SortingAlgor
 	 * @param a The array to be sorted.
 	 */
 	@Override
-	protected E[] sort(E[] a) {
+	protected E[] sort(E[] a) throws SortAbortedException {
 		if (a != null && a.length > 1)
 			selectionSort(a);
 		return a;
 	}
 	
-	protected void selectionSort(E[] a) {
+	protected void selectionSort(E[] a) throws SortAbortedException {
 		// Loop through the list n times
 		for (int i = 0; i < a.length; i++) {
 			// Find the smallest unsorted element

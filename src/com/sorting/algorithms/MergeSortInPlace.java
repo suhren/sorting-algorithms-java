@@ -7,13 +7,13 @@ public class MergeSortInPlace<E extends Comparable<? super E>> extends SortingAl
 	}
 
 	@Override
-	protected E[] sort(E[] a) {
+	protected E[] sort(E[] a) throws SortAbortedException {
 		if (a != null && a.length > 1)
 			mergeSortInPlace(a, 0, a.length - 1);
 		return a;
 	}
 
-	private void mergeSortInPlace(E[] a, int min, int max) {
+	private void mergeSortInPlace(E[] a, int min, int max) throws SortAbortedException {
 		if (max - min == 0) {
 			return;
 		}
@@ -37,7 +37,7 @@ public class MergeSortInPlace<E extends Comparable<? super E>> extends SortingAl
 	 * @param mid The mid point in the section of the array to be merged. It's also the last index of the left portion of the array
 	 * and mid+1 is the first index in the right portion.
 	 */
-	private void merge(E[] a, int min, int max, int mid) {
+	private void merge(E[] a, int min, int max, int mid) throws SortAbortedException {
 		  int left = min;  int right = mid+1;
 	      // One extra check:  can we SKIP the merge?
 	      if (compare(a, mid, right) <= 0)

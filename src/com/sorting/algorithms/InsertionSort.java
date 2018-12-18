@@ -18,13 +18,13 @@ public class InsertionSort<E extends Comparable<? super E>> extends SortingAlgor
 	 * @param a The array to be sorted.
 	 */
 	@Override
-	protected E[] sort(E[] a) {
+	protected E[] sort(E[] a) throws SortAbortedException {
 		if (a != null && a.length > 1)
 			insertionSort(a);
 		return a;
 	}
 	
-	private void insertionSort(E[] a) {
+	private void insertionSort(E[] a) throws SortAbortedException {
 		// Perform the operation for each element in the list.
 		for (int i = 1; i < a.length; i++) {
 			// The j index is the border of the sorted and unsorted sublists.

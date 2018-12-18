@@ -7,13 +7,13 @@ public class HeapSort<E extends Comparable<? super E>> extends SortingAlgorithm<
 	}
 
 	@Override
-	protected E[] sort(E[] a) {
+	protected E[] sort(E[] a) throws SortAbortedException {
 		if (a != null && a.length > 1)
 			heapSort(a, a.length);
 		return a;
 	}
 	
-	private void heapSort(E[] a, int n) {
+	private void heapSort(E[] a, int n) throws SortAbortedException {
 		// Build a max heap (rearrange array) 
 		for (int i = n / 2 - 1; i >= 0; i--)
 			heapify(a, n, i);
@@ -32,7 +32,7 @@ public class HeapSort<E extends Comparable<? super E>> extends SortingAlgorithm<
 	 * @param n
 	 * @param i
 	 */
-    void heapify(E[] a, int n, int i) { 
+    void heapify(E[] a, int n, int i) throws SortAbortedException { 
         int largest = i; // Initialize largest as root 
         int l = 2*i + 1; // left = 2*i + 1 
         int r = 2*i + 2; // right = 2*i + 2 

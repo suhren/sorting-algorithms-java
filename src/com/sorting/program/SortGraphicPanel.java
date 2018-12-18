@@ -108,9 +108,14 @@ public class SortGraphicPanel extends JPanel implements ComponentListener {
 		if (indexBuffer != null && indexBuffer.size() > 0) {
         	List<Integer> indices = new ArrayList<>();
         	
-        	for (int i = 0; i < indexBuffer.size(); i++)
-        		indices.add(indexBuffer.get(i));
-        	
+        	for (int i = 0; i < indexBuffer.size(); i++) {
+        		// Double check for thread safety.
+        		try {
+        			indices.add(indexBuffer.get(i));
+        		} catch (IndexOutOfBoundsException e) {
+        			
+        		}
+        	}
 	        indexBuffer.clear();
 	        
 			double w = screenBuffer.getWidth() * 1.0 / data.length;

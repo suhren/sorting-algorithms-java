@@ -19,7 +19,7 @@ public class QuickSort<E extends Comparable<? super E>> extends SortingAlgorithm
 	 * @param a The array to sort.
 	 */
 	@Override
-	protected E[] sort(E[] a) {
+	protected E[] sort(E[] a) throws SortAbortedException {
 		if (a != null && a.length > 1)
 			quickSort(a, 0, a.length - 1);
 		return a;
@@ -31,7 +31,7 @@ public class QuickSort<E extends Comparable<? super E>> extends SortingAlgorithm
 	 * @param iLow The lower index of the span.
 	 * @param iHigh The upper index of the span.
 	 */
-	private void quickSort(E[] a, int iLow, int iHigh) {
+	private void quickSort(E[] a, int iLow, int iHigh) throws SortAbortedException {
 		if (iLow >= iHigh)
 			return;
 					

@@ -17,13 +17,13 @@ public class BubbleSort<E extends Comparable<? super E>> extends SortingAlgorith
 	 * @param a The array to be sorted.
 	 */
 	@Override
-	protected E[] sort(E[] a) {
+	protected E[] sort(E[] a) throws SortAbortedException {
 		if (a != null && a.length > 1)
 			bubbleSort(a);
 		return a;
 	}
 	
-	private void bubbleSort(E[] a) {
+	private void bubbleSort(E[] a) throws SortAbortedException {
 		// Loop for each element in the array
 		for (int i = 0; i < a.length; i++) {
 			// After each loop we know that the largest unsorted element will be 

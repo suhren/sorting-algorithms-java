@@ -7,13 +7,13 @@ public class ShellSort<E extends Comparable<? super E>> extends SortingAlgorithm
 	}
 
 	@Override
-	protected E[] sort(E[] a) {
+	protected E[] sort(E[] a) throws SortAbortedException {
 		if (a != null && a.length > 1)
 			shellSort(a);
 		return a;
 	}
 
-	private void shellSort(E[] a) {
+	private void shellSort(E[] a) throws SortAbortedException {
 		int n = a.length;
 		// Start with a big gap, then reduce the gap.
 		for (int gap = n/2; gap > 0; gap /= 2) {

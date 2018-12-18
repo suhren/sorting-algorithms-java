@@ -7,13 +7,13 @@ public class CountingSort extends SortingAlgorithm<Integer> {
 	}
 
 	@Override
-	protected Integer[] sort(Integer[] a) {
+	protected Integer[] sort(Integer[] a) throws SortAbortedException {
 		if (a != null && a.length > 1)
 			countingSort(a);
 		return a;
 	}
 	
-	protected void countingSort(Integer[] a) {
+	protected void countingSort(Integer[] a) throws SortAbortedException {
 		int n = a.length;
 		
 		// Find the max value of the array.

@@ -27,6 +27,7 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultCaret;
 import javax.swing.JFormattedTextField;
 
 import com.sorting.algorithms.*;
@@ -38,9 +39,10 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 
 	private SortGraphicPanel graphicsPanel;
 	private JFormattedTextField textGenerateNumber, textGenerateLow, textGenerateHigh, textDelay;
-	public JTextArea textAreaLog, textAreaInput, textAreaOutput;
-	public JScrollPane scrollAreaLog, scrollAreaInput, scrollAreaOutput;
-
+	private JTextArea textAreaLog, textAreaInput, textAreaOutput;
+	private JScrollPane scrollAreaLog, scrollAreaInput, scrollAreaOutput;
+	private JComboBox<String> comboBoxSort;
+	
 	private boolean drawBarOutline = true;
 	private boolean drawBarRainbow = true;
 	private boolean drawWhileSorting = true;
@@ -51,6 +53,7 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 	private int delay = 0;
 	private Integer[] data;
 	private SortingAlgorithm<Integer> sortingAlgorithm;
+	private SortingOperation sortingOperation;
 
 	public TestFrame() {
 		setupFrame();
@@ -107,6 +110,8 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 		textAreaLog.setColumns(44);
 		textAreaLog.setRows(10);
 		textAreaLog.setBackground(new Color(240, 240, 240));
+		DefaultCaret caret = (DefaultCaret) textAreaLog.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		scrollAreaLog = new JScrollPane(textAreaLog, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		textAreaPanelLog.add(scrollAreaLog, BorderLayout.EAST);
@@ -144,16 +149,14 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 		checkDraw.addActionListener(e -> drawWhileSorting = (checkDraw.isSelected()));
 		checkDraw.setSelected(drawWhileSorting);
 
-		JLabel labelDelay = new JLabel("Delay (ms):");
+		JLabel labelDelay = new JLabel("Delay (µs):");
 		textDelay = new JFormattedTextField(NumberFormat.getNumberInstance());
 		textDelay.setValue(delay);
 		textDelay.setColumns(3);
 		textDelay.addPropertyChangeListener(e -> delay = ((Number) textDelay.getValue()).intValue());
 
 		JLabel labelSort = new JLabel("Sorting algorithm:");
-		JComboBox<String> comboBoxSort = new JComboBox<>(SortingAlgorithmLibrary.getAlgorithmNames());
-		comboBoxSort.addActionListener(
-				e -> sortingAlgorithm = SortingAlgorithmLibrary.getAlgorithm((String) comboBoxSort.getSelectedItem()));
+		comboBoxSort = new JComboBox<>(SortingAlgorithmLibrary.getAlgorithmNames());
 
 		optionsLayout.setAutoCreateGaps(true);
 		optionsLayout.setAutoCreateContainerGaps(true);
@@ -230,6 +233,10 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 		buttonSort.addActionListener(e -> sort());
 		JButton buttonStop = new JButton("Stop");
 		actionPanel.add(buttonStop);
+		buttonStop.addActionListener(e -> {
+		 if (sortingOperation != null)
+			 sortingOperation.abort();
+		});
 		JButton buttonReload = new JButton("Reload input");
 		buttonReload.addActionListener(e -> reload());
 		actionPanel.add(buttonReload);
@@ -294,10 +301,11 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 		 * code. To have the run() method of the MyRunnable instance called by the new
 		 * created thread, newThread, you MUST call the newThread.start() method.
 		 */
-
+		sortingAlgorithm = SortingAlgorithmLibrary.getAlgorithm((String) comboBoxSort.getSelectedItem());
+		
 		if (data != null && data.length > 0) {
-			Thread sortThread = new Thread(new SortingOperation(sortingAlgorithm, data, this, delay, startEndPrintout,
-					eventPrintout, arrayPrintout), "SortingOperation");
+			sortingOperation = new SortingOperation(sortingAlgorithm, data, this, delay, startEndPrintout, eventPrintout, arrayPrintout);
+			Thread sortThread = new Thread(sortingOperation, "SortingOperation");
 			sortThread.start(); 
 			// sortThread.run();
 		} else
@@ -359,6 +367,7 @@ public class TestFrame extends JFrame implements SortingOperationListener {
 
 	@Override
 	public void operationDone(SortingOperation op) {
+		textAreaOutput.setText(Utils.arrayToString(data));
 		graphicsPanel.refreshNow();
 	}
 }

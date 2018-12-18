@@ -1,9 +1,9 @@
 package com.sorting.program;
 
+import com.sorting.algorithms.SortAbortedException;
 import com.sorting.algorithms.SortingAlgorithm;
 import com.sorting.util.SortingAlgorithmListener;
 import com.sorting.util.SortingOperationListener;
-import com.sorting.util.Utils;
 
 public class SortingOperation extends Thread implements SortingAlgorithmListener {
 
@@ -18,9 +18,6 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 	private boolean bufferEventOperation = false;
 	private boolean bufferEventArray = false;
 
-	private volatile boolean running = true;
-	private String outputString;
-
 	public SortingOperation(SortingAlgorithm<Integer> sortingAlgorithm, Integer[] data,
 			SortingOperationListener listener, int delay, boolean logStartEnd, boolean logEvent, boolean logArray) {
 		this.sortingAlgorithm = sortingAlgorithm;
@@ -34,7 +31,7 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 	}
 
 	public void abort() {
-		this.running = false;
+		sortingAlgorithm.abort();
 	}
 	public void setBufferEventStartEnd(boolean enabled) {
 		this.bufferEventStartEnd = enabled;
@@ -56,7 +53,10 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 	public void run() {
 		try {
 			sortingAlgorithm.sortArray(data, this);
-		} catch (Exception e) {
+		} catch (SortAbortedException e) {
+			listener.operationEvent(this, generateStatusString(sortingAlgorithm, e.getMessage()));
+		} 
+		catch (Exception e) {
 			System.out.println("Exception is caught: " + e.getMessage());
 		}
 	}
@@ -124,8 +124,6 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 
 	@Override
 	public void sortEnd(SortingAlgorithm<?> s) {
-		outputString = Utils.arrayToString(data);
-
 		if (bufferEventStartEnd)
 			listener.operationEvent(this, generateStatusString(s, "Sorted with " + s.nGet() + " Gets, " + s.nSet()
 					+ " Sets, " + s.nComp() + " Comparisions, and " + s.nSwap() + " Swaps."));
@@ -154,9 +152,5 @@ public class SortingOperation extends Thread implements SortingAlgorithmListener
 				end = System.nanoTime();
 			} while (start + delay * 1000 >= end);
 		}
-	}
-
-	public String getOutput() {
-		return outputString;
 	}
 }
